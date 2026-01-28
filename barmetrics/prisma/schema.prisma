@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  brand           String
+  productName     String
+  category        String
+  abvPercent      Float
+  nominalVolumeMl Int
+  defaultDensity  Float    @default(0.95)
+  defaultTareG    Float?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  calibrations    BottleCalibration[]
+  measurements    BottleMeasurement[]
+}
+
+model BottleCalibration {
+  id                String   @id @default(cuid())
+  productId         String
+  tareWeightG       Float
+  fullBottleWeightG Float?
+  calibrationMethod String
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  measurements      BottleMeasurement[]
+}
+
+model MeasurementSession {
+  id          String   @id @default(cuid())
+  name        String?
+  location    String?
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+
+  measurements BottleMeasurement[]
+}
+
+model BottleMeasurement {
+  id             String   @id @default(cuid())
+  sessionId      String
+  productId      String
+  calibrationId  String?
+  grossWeightG   Float
+  tareWeightG    Float
+  netMassG       Float
+  densityGPerMl  Float
+  volumeMl       Float
+  volumeL        Float
+  percentFull    Float?
+  poursRemaining Float?
+  standardPourMl Float?
+  measuredAt     DateTime @default(now())
+
+  session        MeasurementSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  product        Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  calibration    BottleCalibration? @relation(fields: [calibrationId], references: [id], onDelete: SetNull)
+}
