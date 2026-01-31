@@ -188,13 +188,13 @@ export function MeasurementForm({ sessionId, onMeasurementSaved }: MeasurementFo
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="standardPour">Standard Pour (ml)</Label>
+                  <Label htmlFor="standardPour">Standard Pour Size (ml)</Label>
                   <Input
                     id="standardPour"
                     type="number"
                     value={standardPour}
                     onChange={(e) => setStandardPour(e.target.value)}
-                    placeholder="44"
+                    placeholder="30"
                   />
                 </div>
               </div>

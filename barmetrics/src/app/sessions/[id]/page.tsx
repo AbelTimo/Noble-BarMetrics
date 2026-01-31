@@ -15,8 +15,20 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { MeasurementForm } from '@/components/measurements/measurement-form';
+import { QuickCountForm } from '@/components/measurements/quick-count-form';
 import { BottleVisual } from '@/components/measurements/bottle-visual';
-import { ArrowLeft, CheckCircle, Play, Trash2 } from 'lucide-react';
+import { AnomalyBadge, VarianceBadge } from '@/components/measurements/anomaly-badge';
+import { AnomalySummaryPanel } from '@/components/sessions/anomaly-summary-panel';
+import {
+  ArrowLeft,
+  CheckCircle,
+  Play,
+  Trash2,
+  Zap,
+  AlertTriangle,
+  SkipForward,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Product {
   id: string;
@@ -37,6 +49,9 @@ interface Measurement {
   poursRemaining: number | null;
   measuredAt: string;
   product: Product;
+  anomalyFlags: string | null;
+  variancePercent: number | null;
+  isSkipped: boolean;
 }
 
 interface Session {
@@ -45,6 +60,10 @@ interface Session {
   location: string | null;
   startedAt: string;
   completedAt: string | null;
+  mode: string;
+  sourceSessionId: string | null;
+  defaultPourMl: number | null;
+  hasAnomalies: boolean;
   measurements: Measurement[];
 }
 
@@ -119,6 +138,8 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
     );
   }
 
+  const isQuickCount = session.mode === 'quick_count';
+
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
@@ -132,7 +153,21 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">{session.name || 'Untitled Session'}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">{session.name || 'Untitled Session'}</h1>
+            {isQuickCount && (
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                <Zap className="mr-1 h-3 w-3" />
+                Quick Count
+              </Badge>
+            )}
+            {session.hasAnomalies && (
+              <Badge variant="destructive" className="bg-red-100 text-red-800">
+                <AlertTriangle className="mr-1 h-3 w-3" />
+                Has Anomalies
+              </Badge>
+            )}
+          </div>
           <div className="flex items-center gap-4 text-muted-foreground mt-1">
             {session.location && <span>{session.location}</span>}
             <span>
@@ -159,102 +194,158 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {!session.completedAt && (
-          <div>
-            <MeasurementForm
-              sessionId={session.id}
-              onMeasurementSaved={fetchSession}
-            />
-          </div>
-        )}
-
-        <div className={session.completedAt ? 'lg:col-span-2' : ''}>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Measurements ({session.measurements.length})</span>
-                <span className="text-sm font-normal text-muted-foreground">
-                  Total: {(getTotalVolume() / 1000).toFixed(2)} L
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {session.measurements.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  No measurements yet. Start measuring bottles!
-                </p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead className="text-right">Gross</TableHead>
-                      <TableHead className="text-right">Volume</TableHead>
-                      <TableHead className="text-center">Fill</TableHead>
-                      <TableHead className="text-right">Pours</TableHead>
-                      <TableHead className="text-right">Time</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {session.measurements.map((measurement) => (
-                      <TableRow key={measurement.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">
-                              {measurement.product.brand}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {measurement.product.productName}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {measurement.grossWeightG}g
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {measurement.volumeMl.toFixed(0)}ml
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-center">
-                            {measurement.percentFull !== null && (
-                              <BottleVisual
-                                percentFull={measurement.percentFull}
-                                size="sm"
-                              />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {measurement.poursRemaining?.toFixed(1) || '-'}
-                        </TableCell>
-                        <TableCell className="text-right text-sm text-muted-foreground">
-                          {new Date(measurement.measuredAt).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </TableCell>
-                        <TableCell>
-                          {!session.completedAt && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteMeasurement(measurement.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+      {/* Quick Count Mode - Full width form */}
+      {isQuickCount && !session.completedAt && session.sourceSessionId && (
+        <div className="mb-6">
+          <QuickCountForm
+            sessionId={session.id}
+            sourceSessionId={session.sourceSessionId}
+            defaultPourMl={session.defaultPourMl ?? undefined}
+            onMeasurementsSaved={fetchSession}
+          />
         </div>
-      </div>
+      )}
+
+      {/* Standard Mode or Completed Session View */}
+      {(!isQuickCount || session.completedAt) && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Standard mode measurement form */}
+          {!session.completedAt && !isQuickCount && (
+            <div>
+              <MeasurementForm
+                sessionId={session.id}
+                onMeasurementSaved={fetchSession}
+              />
+            </div>
+          )}
+
+          {/* Anomaly Summary Panel - show for completed sessions or when anomalies exist */}
+          {(session.completedAt || session.hasAnomalies) && (
+            <div className={session.completedAt && !isQuickCount ? '' : 'lg:col-span-2'}>
+              <AnomalySummaryPanel sessionId={session.id} />
+            </div>
+          )}
+
+          {/* Measurements table */}
+          <div className={cn(
+            session.completedAt ? 'lg:col-span-2' : '',
+            isQuickCount && session.completedAt ? '' : ''
+          )}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Measurements ({session.measurements.length})</span>
+                  <span className="text-sm font-normal text-muted-foreground">
+                    Total: {(getTotalVolume() / 1000).toFixed(2)} L
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {session.measurements.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    {isQuickCount
+                      ? 'Enter weights above to start measuring'
+                      : 'No measurements yet. Start measuring bottles!'}
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Product</TableHead>
+                        <TableHead className="text-right">Gross</TableHead>
+                        <TableHead className="text-right">Volume</TableHead>
+                        <TableHead className="text-center">Fill</TableHead>
+                        {isQuickCount && (
+                          <TableHead className="text-center">Change</TableHead>
+                        )}
+                        <TableHead className="text-right">Pours</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="text-right">Time</TableHead>
+                        <TableHead></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {session.measurements.map((measurement) => (
+                        <TableRow
+                          key={measurement.id}
+                          className={cn(
+                            measurement.isSkipped && 'bg-muted/30 text-muted-foreground',
+                            measurement.anomalyFlags && 'bg-amber-50/50'
+                          )}
+                        >
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">
+                                {measurement.product.brand}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {measurement.product.productName}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {measurement.grossWeightG}g
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {measurement.volumeMl.toFixed(0)}ml
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-center">
+                              {measurement.percentFull !== null && (
+                                <BottleVisual
+                                  percentFull={measurement.percentFull}
+                                  size="sm"
+                                />
+                              )}
+                            </div>
+                          </TableCell>
+                          {isQuickCount && (
+                            <TableCell className="text-center">
+                              <VarianceBadge variancePercent={measurement.variancePercent} />
+                            </TableCell>
+                          )}
+                          <TableCell className="text-right">
+                            {measurement.poursRemaining?.toFixed(1) || '-'}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {measurement.isSkipped ? (
+                              <Badge variant="outline" className="text-xs">
+                                <SkipForward className="mr-1 h-3 w-3" />
+                                Skipped
+                              </Badge>
+                            ) : measurement.anomalyFlags ? (
+                              <AnomalyBadge anomalyFlags={measurement.anomalyFlags} showAll />
+                            ) : (
+                              <CheckCircle className="h-4 w-4 text-green-500 mx-auto" />
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-sm text-muted-foreground">
+                            {new Date(measurement.measuredAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </TableCell>
+                          <TableCell>
+                            {!session.completedAt && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteMeasurement(measurement.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

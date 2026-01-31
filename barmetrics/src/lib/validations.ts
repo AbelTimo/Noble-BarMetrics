@@ -57,18 +57,29 @@ export const calibrationUpdateSchema = calibrationSchema.partial();
 export type CalibrationFormData = z.infer<typeof calibrationSchema>;
 export type CalibrationMethod = z.infer<typeof calibrationMethodSchema>;
 
+// Session mode enum
+export const sessionModeSchema = z.enum(['standard', 'quick_count']);
+export type SessionMode = z.infer<typeof sessionModeSchema>;
+
 // Session validation schemas
 export const sessionSchema = z.object({
   name: z.string().max(100, 'Name must be 100 characters or less').optional().nullable(),
   location: z.string().max(100, 'Location must be 100 characters or less').optional().nullable(),
 });
 
-export const sessionCreateSchema = sessionSchema;
+export const sessionCreateSchema = sessionSchema.extend({
+  mode: sessionModeSchema.optional().default('standard'),
+  sourceSessionId: z.string().optional().nullable(),
+  defaultPourMl: z.number().min(1).max(500).optional().default(30),
+});
+
 export const sessionUpdateSchema = sessionSchema.extend({
   completedAt: z.string().datetime().optional().nullable(),
+  hasAnomalies: z.boolean().optional(),
 });
 
 export type SessionFormData = z.infer<typeof sessionSchema>;
+export type SessionCreateData = z.infer<typeof sessionCreateSchema>;
 
 // Measurement validation schemas
 export const measurementSchema = z.object({
@@ -94,6 +105,25 @@ export const measurementCreateSchema = measurementSchema.extend({
 export type MeasurementFormData = z.infer<typeof measurementSchema>;
 export type MeasurementCreateData = z.infer<typeof measurementCreateSchema>;
 
+// Bulk measurement item schema (for quick count mode)
+export const bulkMeasurementItemSchema = z.object({
+  productId: z.string().min(1, 'Product is required'),
+  calibrationId: z.string().optional().nullable(),
+  grossWeightG: z.number()
+    .min(0, 'Gross weight cannot be negative')
+    .max(10000, 'Gross weight seems too high'),
+  previousMeasurementId: z.string().optional().nullable(),
+  isSkipped: z.boolean().optional().default(false),
+});
+
+export const bulkMeasurementSchema = z.object({
+  measurements: z.array(bulkMeasurementItemSchema).min(1, 'At least one measurement required'),
+  standardPourMl: z.number().min(1).max(500).optional().default(44),
+});
+
+export type BulkMeasurementItem = z.infer<typeof bulkMeasurementItemSchema>;
+export type BulkMeasurementData = z.infer<typeof bulkMeasurementSchema>;
+
 // Quick measurement schema (for simplified measurement input)
 export const quickMeasurementSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
@@ -104,7 +134,7 @@ export const quickMeasurementSchema = z.object({
     .min(1, 'Pour size must be at least 1ml')
     .max(500, 'Pour size seems too large')
     .optional()
-    .default(44), // 1.5 oz standard shot
+    .default(30), // 1 oz standard pour
 });
 
 export type QuickMeasurementFormData = z.infer<typeof quickMeasurementSchema>;

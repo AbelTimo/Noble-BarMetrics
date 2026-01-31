@@ -39,32 +39,44 @@ model BottleCalibration {
 }
 
 model MeasurementSession {
-  id          String   @id @default(cuid())
-  name        String?
-  location    String?
-  startedAt   DateTime @default(now())
-  completedAt DateTime?
+  id              String   @id @default(cuid())
+  name            String?
+  location        String?
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  mode            String   @default("standard")  // "standard" | "quick_count"
+  sourceSessionId String?                        // Session copied from for quick_count
+  defaultPourMl   Float?   @default(30)          // Session-level pour size
+  hasAnomalies    Boolean  @default(false)       // Quick filter flag
 
-  measurements BottleMeasurement[]
+  measurements    BottleMeasurement[]
+  sourceSession   MeasurementSession?  @relation("SessionCopy", fields: [sourceSessionId], references: [id], onDelete: SetNull)
+  derivedSessions MeasurementSession[] @relation("SessionCopy")
 }
 
 model BottleMeasurement {
-  id             String   @id @default(cuid())
-  sessionId      String
-  productId      String
-  calibrationId  String?
-  grossWeightG   Float
-  tareWeightG    Float
-  netMassG       Float
-  densityGPerMl  Float
-  volumeMl       Float
-  volumeL        Float
-  percentFull    Float?
-  poursRemaining Float?
-  standardPourMl Float?
-  measuredAt     DateTime @default(now())
+  id                    String   @id @default(cuid())
+  sessionId             String
+  productId             String
+  calibrationId         String?
+  grossWeightG          Float
+  tareWeightG           Float
+  netMassG              Float
+  densityGPerMl         Float
+  volumeMl              Float
+  volumeL               Float
+  percentFull           Float?
+  poursRemaining        Float?
+  standardPourMl        Float?
+  measuredAt            DateTime @default(now())
+  anomalyFlags          String?  // JSON array: ["OVER_CAPACITY", "LARGE_VARIANCE"]
+  previousMeasurementId String?  // Link to same product in source session
+  variancePercent       Float?   // Change from previous measurement
+  isSkipped             Boolean  @default(false)
 
-  session        MeasurementSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  product        Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
-  calibration    BottleCalibration? @relation(fields: [calibrationId], references: [id], onDelete: SetNull)
+  session               MeasurementSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  product               Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  calibration           BottleCalibration? @relation(fields: [calibrationId], references: [id], onDelete: SetNull)
+  previousMeasurement   BottleMeasurement? @relation("MeasurementHistory", fields: [previousMeasurementId], references: [id], onDelete: SetNull)
+  derivedMeasurements   BottleMeasurement[] @relation("MeasurementHistory")
 }

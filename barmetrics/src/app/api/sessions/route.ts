@@ -9,6 +9,9 @@ export async function GET() {
         _count: {
           select: { measurements: true },
         },
+        sourceSession: {
+          select: { id: true, name: true },
+        },
       },
       orderBy: { startedAt: 'desc' },
     });
@@ -28,8 +31,33 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = sessionCreateSchema.parse(body);
 
+    // If sourceSessionId provided, verify it exists
+    if (validated.sourceSessionId) {
+      const sourceSession = await prisma.measurementSession.findUnique({
+        where: { id: validated.sourceSessionId },
+      });
+
+      if (!sourceSession) {
+        return NextResponse.json(
+          { error: 'Source session not found' },
+          { status: 404 }
+        );
+      }
+    }
+
     const session = await prisma.measurementSession.create({
-      data: validated,
+      data: {
+        name: validated.name,
+        location: validated.location,
+        mode: validated.mode,
+        sourceSessionId: validated.sourceSessionId,
+        defaultPourMl: validated.defaultPourMl,
+      },
+      include: {
+        sourceSession: {
+          select: { id: true, name: true },
+        },
+      },
     });
 
     return NextResponse.json(session, { status: 201 });

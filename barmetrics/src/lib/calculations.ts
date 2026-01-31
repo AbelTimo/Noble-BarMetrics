@@ -235,4 +235,4 @@ export const STANDARD_POUR_SIZES = {
   beer: 355,     // 12 oz beer
 } as const;
 
-export const DEFAULT_STANDARD_POUR_ML = 44; // 1.5 oz standard shot
+export const DEFAULT_STANDARD_POUR_ML = 30; // 1 oz standard pour
