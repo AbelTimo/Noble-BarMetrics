@@ -5,9 +5,7 @@ import { LIQUOR_CATEGORIES, BOTTLE_SIZES } from './calculations';
 export const productSchema = z.object({
   brand: z.string().min(1, 'Brand is required').max(100, 'Brand must be 100 characters or less'),
   productName: z.string().min(1, 'Product name is required').max(100, 'Product name must be 100 characters or less'),
-  category: z.enum(LIQUOR_CATEGORIES, {
-    errorMap: () => ({ message: 'Please select a valid category' }),
-  }),
+  category: z.enum(LIQUOR_CATEGORIES, { message: 'Please select a valid category' }),
   abvPercent: z.number()
     .min(0, 'ABV must be at least 0%')
     .max(100, 'ABV cannot exceed 100%'),
@@ -18,20 +16,19 @@ export const productSchema = z.object({
   defaultDensity: z.number()
     .min(0.7, 'Density must be at least 0.7 g/ml')
     .max(1.1, 'Density cannot exceed 1.1 g/ml')
-    .optional()
     .default(0.95),
   defaultTareG: z.number()
     .min(0, 'Tare weight cannot be negative')
     .max(2000, 'Tare weight seems too high')
-    .optional()
-    .nullable(),
-  isActive: z.boolean().optional().default(true),
+    .nullable()
+    .optional(),
+  isActive: z.boolean().default(true),
 });
 
 export const productCreateSchema = productSchema;
 export const productUpdateSchema = productSchema.partial();
 
-export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = z.input<typeof productSchema>;
 
 // Calibration validation schemas
 export const calibrationMethodSchema = z.enum([
