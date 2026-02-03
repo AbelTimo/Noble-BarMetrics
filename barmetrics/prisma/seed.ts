@@ -45,11 +45,35 @@ const sampleProducts = [
   { brand: "Glenlivet", productName: "12 Year", category: "SCOTCH", abvPercent: 40, nominalVolumeMl: 750, defaultTareG: 540 },
 ];
 
+// Default users with roles
+const defaultUsers = [
+  { username: 'admin', displayName: 'Admin Manager', role: 'MANAGER', pin: 'MTIzNA==' }, // PIN: 1234
+  { username: 'store', displayName: 'Store Keeper', role: 'STOREKEEPER', pin: 'MTIzNA==' }, // PIN: 1234
+  { username: 'bar', displayName: 'Bartender', role: 'BARTENDER', pin: 'MTIzNA==' }, // PIN: 1234
+];
+
+// Default locations
+const defaultLocations = [
+  { name: 'Main Bar', isDefault: true },
+  { name: 'Back Bar', isDefault: true },
+  { name: 'Stock Room', isDefault: true },
+  { name: 'Walk-in Cooler', isDefault: true },
+  { name: 'Service Bar', isDefault: true },
+];
+
 function seed() {
   console.log('Seeding database...');
   const now = new Date().toISOString();
 
-  // Clear existing data
+  // Clear existing data in reverse order of dependencies
+  try { db.exec('DELETE FROM LabelEvent'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM Label'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM LabelBatch'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM ProductSKU'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM SKU'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM Location'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM Session'); } catch { /* table may not exist */ }
+  try { db.exec('DELETE FROM User'); } catch { /* table may not exist */ }
   db.exec('DELETE FROM BottleMeasurement');
   db.exec('DELETE FROM BottleCalibration');
   db.exec('DELETE FROM MeasurementSession');
@@ -117,7 +141,56 @@ function seed() {
   );
   console.log('Created sample session: Sample Inventory Session');
 
+  // Seed users
+  try {
+    const insertUser = db.prepare(`
+      INSERT INTO User (id, username, displayName, role, pin, isActive, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    for (const user of defaultUsers) {
+      insertUser.run(
+        generateCuid(),
+        user.username,
+        user.displayName,
+        user.role,
+        user.pin,
+        1, // isActive = true
+        now,
+        now
+      );
+      console.log(`Created user: ${user.displayName} (${user.role})`);
+    }
+  } catch (error) {
+    console.log('Skipping user seeding (table may not exist):', error);
+  }
+
+  // Seed locations
+  try {
+    const insertLocation = db.prepare(`
+      INSERT INTO Location (id, name, isDefault, isActive, createdAt)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+
+    for (const location of defaultLocations) {
+      insertLocation.run(
+        generateCuid(),
+        location.name,
+        location.isDefault ? 1 : 0,
+        1, // isActive = true
+        now
+      );
+      console.log(`Created location: ${location.name}`);
+    }
+  } catch (error) {
+    console.log('Skipping location seeding (table may not exist):', error);
+  }
+
   console.log('Seeding complete!');
+  console.log('\nDefault credentials:');
+  console.log('  Manager: admin / 1234');
+  console.log('  Storekeeper: store / 1234');
+  console.log('  Bartender: bar / 1234');
 }
 
 seed();

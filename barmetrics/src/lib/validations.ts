@@ -173,3 +173,188 @@ export const productFilterSchema = z.object({
 });
 
 export type ProductFilterParams = z.infer<typeof productFilterSchema>;
+
+// Excel import validation schema
+// Handles both numbers and strings from Excel cells with proper transformation
+export const excelImportRowSchema = z.object({
+  brand: z.string().min(1, 'Brand is required'),
+  productName: z.string().min(1, 'Product name is required'),
+  category: z.string().transform((val) => val.toUpperCase()).pipe(
+    z.enum(LIQUOR_CATEGORIES, { message: 'Invalid category' })
+  ),
+  abvPercent: z.union([
+    z.number(),
+    z.string().transform((val) => parseFloat(val)),
+  ]).pipe(z.number().min(0, 'ABV must be at least 0%').max(100, 'ABV cannot exceed 100%')),
+  nominalVolumeMl: z.union([
+    z.number(),
+    z.string().transform((val) => parseInt(val, 10)),
+  ]).pipe(z.number().int('Volume must be a whole number').min(1, 'Volume must be at least 1ml').max(5000, 'Volume cannot exceed 5000ml')),
+  defaultTareG: z.union([
+    z.number(),
+    z.string().transform((val) => parseFloat(val)),
+    z.null(),
+    z.undefined(),
+  ]).pipe(z.number().min(0, 'Tare weight cannot be negative').max(2000, 'Tare weight seems too high').nullable().optional()),
+});
+
+export type ExcelImportRow = z.input<typeof excelImportRowSchema>;
+export type ValidatedExcelRow = z.output<typeof excelImportRowSchema>;
+
+// Duplicate handling options for import
+export const duplicateHandlingSchema = z.enum(['skip', 'update', 'error']);
+export type DuplicateHandling = z.infer<typeof duplicateHandlingSchema>;
+
+// ============================================
+// SKU & Label Management Schemas
+// ============================================
+
+// SKU unit types
+export const skuUnitSchema = z.enum(['ml', 'oz', 'L', 'each']);
+export type SKUUnit = z.infer<typeof skuUnitSchema>;
+
+// SKU validation schemas
+export const skuSchema = z.object({
+  code: z.string()
+    .min(1, 'SKU code is required')
+    .max(50, 'SKU code must be 50 characters or less')
+    .regex(/^[A-Z0-9-]+$/, 'SKU code must contain only uppercase letters, numbers, and hyphens'),
+  name: z.string()
+    .min(1, 'Name is required')
+    .max(100, 'Name must be 100 characters or less'),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
+  category: z.enum(LIQUOR_CATEGORIES, { message: 'Please select a valid category' }),
+  sizeMl: z.number()
+    .int('Size must be a whole number')
+    .min(1, 'Size must be at least 1ml')
+    .max(5000, 'Size cannot exceed 5000ml'),
+  unit: skuUnitSchema.default('ml'),
+  barcode: z.string().max(50, 'Barcode must be 50 characters or less').optional().nullable(),
+  isActive: z.boolean().default(true),
+});
+
+export const skuCreateSchema = skuSchema;
+export const skuUpdateSchema = skuSchema.partial();
+
+export type SKUFormData = z.input<typeof skuSchema>;
+export type SKUData = z.output<typeof skuSchema>;
+
+// Label status enum
+export const labelStatusSchema = z.enum(['UNASSIGNED', 'ASSIGNED', 'RETIRED']);
+export type LabelStatus = z.infer<typeof labelStatusSchema>;
+
+// Label event type enum
+export const labelEventTypeSchema = z.enum(['CREATED', 'ASSIGNED', 'LOCATION_CHANGED', 'SCANNED', 'RETIRED', 'REPRINTED']);
+export type LabelEventType = z.infer<typeof labelEventTypeSchema>;
+
+// Label validation schemas
+export const labelSchema = z.object({
+  code: z.string()
+    .min(1, 'Label code is required')
+    .regex(/^BM-[A-Z0-9]{8}$/, 'Label code must be in format BM-XXXXXXXX'),
+  skuId: z.string().min(1, 'SKU is required'),
+  status: labelStatusSchema.default('UNASSIGNED'),
+  location: z.string().max(100, 'Location must be 100 characters or less').optional().nullable(),
+  batchId: z.string().optional().nullable(),
+});
+
+export type LabelFormData = z.infer<typeof labelSchema>;
+
+// Label generation schema
+export const labelGenerateSchema = z.object({
+  skuId: z.string().min(1, 'SKU is required'),
+  quantity: z.number()
+    .int('Quantity must be a whole number')
+    .min(1, 'Must generate at least 1 label')
+    .max(500, 'Cannot generate more than 500 labels at once'),
+  notes: z.string().max(500, 'Notes must be 500 characters or less').optional().nullable(),
+  createdBy: z.string().max(100, 'Created by must be 100 characters or less').optional().nullable(),
+});
+
+export type LabelGenerateData = z.infer<typeof labelGenerateSchema>;
+
+// Label assignment schema
+export const labelAssignSchema = z.object({
+  location: z.string()
+    .min(1, 'Location is required')
+    .max(100, 'Location must be 100 characters or less'),
+  locationId: z.string().optional().nullable(),
+  skuId: z.string().optional().nullable(),  // Optional SKU reassignment
+  userId: z.string().max(100).optional().nullable(),
+  deviceId: z.string().max(100).optional().nullable(),
+  performedBy: z.string().max(100, 'Performed by must be 100 characters or less').optional().nullable(),
+});
+
+export type LabelAssignData = z.infer<typeof labelAssignSchema>;
+
+// Label retirement schema
+export const labelRetireSchema = z.object({
+  reason: z.enum(['DAMAGED', 'LOST', 'EXPIRED', 'OTHER'], { message: 'Please select a valid reason' }),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
+  userId: z.string().max(100).optional().nullable(),
+  deviceId: z.string().max(100).optional().nullable(),
+  performedBy: z.string().max(100, 'Performed by must be 100 characters or less').optional().nullable(),
+});
+
+export type LabelRetireData = z.infer<typeof labelRetireSchema>;
+
+// Label reprint schema
+export const labelReprintSchema = z.object({
+  reason: z.enum(['DAMAGED', 'LOST', 'FADED', 'OTHER'], { message: 'Please select a valid reason' }),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
+  userId: z.string().max(100).optional().nullable(),
+  deviceId: z.string().max(100).optional().nullable(),
+  performedBy: z.string().max(100, 'Performed by must be 100 characters or less').optional().nullable(),
+});
+
+export type LabelReprintData = z.infer<typeof labelReprintSchema>;
+
+// Label event schema
+export const labelEventSchema = z.object({
+  labelId: z.string().min(1, 'Label ID is required'),
+  eventType: labelEventTypeSchema,
+  description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
+  location: z.string().max(100, 'Location must be 100 characters or less').optional().nullable(),
+  metadata: z.string().optional().nullable(),
+  performedBy: z.string().max(100, 'Performed by must be 100 characters or less').optional().nullable(),
+});
+
+export type LabelEventData = z.infer<typeof labelEventSchema>;
+
+// Location validation schema
+export const locationSchema = z.object({
+  name: z.string()
+    .min(1, 'Location name is required')
+    .max(100, 'Location name must be 100 characters or less'),
+  isDefault: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+});
+
+export type LocationFormData = z.infer<typeof locationSchema>;
+
+// Product-SKU link schema
+export const productSkuLinkSchema = z.object({
+  productId: z.string().min(1, 'Product is required'),
+  isPrimary: z.boolean().default(false),
+});
+
+export type ProductSkuLinkData = z.infer<typeof productSkuLinkSchema>;
+
+// Label filter schema
+export const labelFilterSchema = z.object({
+  status: labelStatusSchema.optional(),
+  skuId: z.string().optional(),
+  batchId: z.string().optional(),
+  location: z.string().optional(),
+});
+
+export type LabelFilterParams = z.infer<typeof labelFilterSchema>;
+
+// SKU filter schema
+export const skuFilterSchema = z.object({
+  search: z.string().optional(),
+  category: z.enum(LIQUOR_CATEGORIES).optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type SKUFilterParams = z.infer<typeof skuFilterSchema>;

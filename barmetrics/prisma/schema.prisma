@@ -22,6 +22,7 @@ model Product {
 
   calibrations    BottleCalibration[]
   measurements    BottleMeasurement[]
+  productSkus     ProductSKU[]
 }
 
 model BottleCalibration {
@@ -79,4 +80,151 @@ model BottleMeasurement {
   calibration           BottleCalibration? @relation(fields: [calibrationId], references: [id], onDelete: SetNull)
   previousMeasurement   BottleMeasurement? @relation("MeasurementHistory", fields: [previousMeasurementId], references: [id], onDelete: SetNull)
   derivedMeasurements   BottleMeasurement[] @relation("MeasurementHistory")
+}
+
+model SKU {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  category    String
+  sizeMl      Int
+  unit        String   @default("ml")    // ml, oz, each, etc.
+  barcode     String?                     // UPC/EAN barcode if available
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    ProductSKU[]
+  labels      Label[]
+  batches     LabelBatch[]
+
+  @@index([barcode])
+}
+
+model ProductSKU {
+  id        String   @id @default(cuid())
+  productId String
+  skuId     String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku       SKU      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, skuId])
+}
+
+model Label {
+  id                 String      @id @default(cuid())
+  code               String      @unique
+  skuId              String
+  status             String      @default("UNASSIGNED")  // UNASSIGNED, ASSIGNED, RETIRED
+  locationId         String?                              // FK to Location
+  location           String?                              // Legacy/display name
+  assignedAt         DateTime?
+  retiredAt          DateTime?
+  retiredReason      String?
+  replacedByLabelId  String?     @unique                  // New label that replaced this one
+  replacesLabelId    String?                              // Old label this one replaces
+  createdByUserId    String?                              // User who created the label
+  batchId            String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  sku                SKU         @relation(fields: [skuId], references: [id])
+  locationRef        Location?   @relation(fields: [locationId], references: [id])
+  replacedByLabel    Label?      @relation("LabelReplacement", fields: [replacedByLabelId], references: [id])
+  replacesLabel      Label?      @relation("LabelReplacement")
+  events             LabelEvent[]
+
+  @@index([skuId])
+  @@index([status])
+  @@index([batchId])
+  @@index([locationId])
+}
+
+model LabelEvent {
+  id          String   @id @default(cuid())
+  labelId     String
+  eventType   String   // CREATED, ASSIGNED, LOCATION_CHANGED, RETIRED, REPRINTED, SCANNED
+  description String?
+  location    String?
+  fromValue   String?  // JSON: previous state
+  toValue     String?  // JSON: new state
+  userId      String?  // FK to User who performed the action
+  deviceId    String?  // Device identifier for tracking
+  performedBy String?  // Human-readable name (legacy)
+  createdAt   DateTime @default(now())
+
+  label       Label    @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  user        User?    @relation("LabelEventUser", fields: [userId], references: [id])
+
+  @@index([labelId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model LabelBatch {
+  id           String   @id @default(cuid())
+  skuId        String
+  quantity     Int
+  notes        String?
+  createdAt    DateTime @default(now())
+  createdBy    String?                          // Legacy: display name
+  createdById  String?                          // FK to User
+
+  sku          SKU      @relation(fields: [skuId], references: [id])
+  createdByUser User?   @relation("LabelBatchCreator", fields: [createdById], references: [id])
+
+  @@index([skuId])
+  @@index([createdById])
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  isDefault Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  labels    Label[]
+}
+
+// ============================================
+// User & Authentication Models
+// ============================================
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  displayName  String
+  pin          String?                          // Simple PIN for quick login (hashed)
+  role         String    @default("BARTENDER")  // BARTENDER, STOREKEEPER, MANAGER
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sessions     Session[]
+  labelBatches LabelBatch[] @relation("LabelBatchCreator")
+  labelEvents  LabelEvent[] @relation("LabelEventUser")
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  deviceId  String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
 }

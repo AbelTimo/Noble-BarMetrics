@@ -143,12 +143,12 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
-        <Link href="/sessions">
-          <Button variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/sessions">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Sessions
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <div className="flex items-center justify-between mb-6">

@@ -75,12 +75,12 @@ export default function SessionsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Inventory Sessions</CardTitle>
-          <Link href="/sessions/new">
-            <Button>
+          <Button asChild>
+            <Link href="/sessions/new">
               <Plus className="mr-2 h-4 w-4" />
               New Session
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -133,11 +133,11 @@ export default function SessionsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Link href={`/sessions/${session.id}`}>
-                          <Button variant="ghost" size="icon">
+                        <Button asChild variant="ghost" size="icon">
+                          <Link href={`/sessions/${session.id}`}>
                             <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                         {!session.completedAt && (
                           <Button
                             variant="ghost"

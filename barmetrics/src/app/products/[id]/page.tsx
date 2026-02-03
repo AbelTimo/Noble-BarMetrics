@@ -140,12 +140,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <div className="mb-6">
-        <Link href="/products">
-          <Button variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/products">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Products
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <Card className="mb-6">
@@ -161,12 +161,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </Badge>
             </div>
           </div>
-          <Link href={`/products/${product.id}/edit`}>
-            <Button variant="outline">
+          <Button asChild variant="outline">
+            <Link href={`/products/${product.id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

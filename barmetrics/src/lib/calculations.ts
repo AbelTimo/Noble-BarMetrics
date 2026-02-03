@@ -103,8 +103,9 @@ export function calculateVolumeFromWeight(params: VolumeCalculationParams): Volu
   const volumeL = volumeMl / 1000;
 
   // Calculate percent full if nominal volume provided
+  // Note: We don't cap at 100% to allow anomaly detection for over-capacity readings
   const percentFull = nominalVolumeMl && nominalVolumeMl > 0
-    ? Math.min(100, (volumeMl / nominalVolumeMl) * 100)
+    ? (volumeMl / nominalVolumeMl) * 100
     : null;
 
   // Calculate pours remaining if standard pour provided

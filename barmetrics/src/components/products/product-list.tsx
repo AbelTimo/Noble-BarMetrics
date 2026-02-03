@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,10 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LIQUOR_CATEGORIES } from '@/lib/calculations';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Upload, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+
+type SortField = 'brand' | 'category' | 'abvPercent' | 'nominalVolumeMl';
+type SortDirection = 'asc' | 'desc';
 
 interface Product {
   id: string;
@@ -41,6 +44,54 @@ export function ProductList() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [sortField, setSortField] = useState<SortField>('category');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  // Sort products
+  const sortedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case 'brand':
+          comparison = a.brand.localeCompare(b.brand);
+          break;
+        case 'category':
+          comparison = a.category.localeCompare(b.category);
+          // Secondary sort by brand within same category
+          if (comparison === 0) {
+            comparison = a.brand.localeCompare(b.brand);
+          }
+          break;
+        case 'abvPercent':
+          comparison = a.abvPercent - b.abvPercent;
+          break;
+        case 'nominalVolumeMl':
+          comparison = a.nominalVolumeMl - b.nominalVolumeMl;
+          break;
+      }
+
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }, [products, sortField, sortDirection]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-1 h-3 w-3 text-muted-foreground" />;
+    }
+    return sortDirection === 'asc'
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -95,37 +146,74 @@ export function ProductList() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Products</CardTitle>
-        <Link href="/products/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href="/products/import">
+              <Upload className="mr-2 h-4 w-4" />
+              Import Excel
+            </Link>
           </Button>
-        </Link>
+          <Button asChild>
+            <Link href="/products/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-4 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {LIQUOR_CATEGORIES.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={`${sortField}-${sortDirection}`}
+              onValueChange={(value) => {
+                const [field, direction] = value.split('-') as [SortField, SortDirection];
+                setSortField(field);
+                setSortDirection(direction);
+              }}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="category-asc">Category (A-Z)</SelectItem>
+                <SelectItem value="category-desc">Category (Z-A)</SelectItem>
+                <SelectItem value="brand-asc">Brand (A-Z)</SelectItem>
+                <SelectItem value="brand-desc">Brand (Z-A)</SelectItem>
+                <SelectItem value="abvPercent-asc">ABV (Low-High)</SelectItem>
+                <SelectItem value="abvPercent-desc">ABV (High-Low)</SelectItem>
+                <SelectItem value="nominalVolumeMl-asc">Size (Small-Large)</SelectItem>
+                <SelectItem value="nominalVolumeMl-desc">Size (Large-Small)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {LIQUOR_CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="text-sm text-muted-foreground">
+            Showing {sortedProducts.length} product{sortedProducts.length !== 1 ? 's' : ''}
+            {category && category !== 'all' ? ` in ${category}` : ''}
+            {search ? ` matching "${search}"` : ''}
+          </div>
         </div>
 
         {isLoading ? (
@@ -138,17 +226,49 @@ export function ProductList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">ABV</TableHead>
-                <TableHead className="text-right">Size</TableHead>
+                <TableHead>
+                  <button
+                    onClick={() => handleSort('brand')}
+                    className="flex items-center hover:text-foreground transition-colors"
+                  >
+                    Product
+                    <SortIcon field="brand" />
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button
+                    onClick={() => handleSort('category')}
+                    className="flex items-center hover:text-foreground transition-colors"
+                  >
+                    Category
+                    <SortIcon field="category" />
+                  </button>
+                </TableHead>
+                <TableHead className="text-right">
+                  <button
+                    onClick={() => handleSort('abvPercent')}
+                    className="flex items-center justify-end w-full hover:text-foreground transition-colors"
+                  >
+                    ABV
+                    <SortIcon field="abvPercent" />
+                  </button>
+                </TableHead>
+                <TableHead className="text-right">
+                  <button
+                    onClick={() => handleSort('nominalVolumeMl')}
+                    className="flex items-center justify-end w-full hover:text-foreground transition-colors"
+                  >
+                    Size
+                    <SortIcon field="nominalVolumeMl" />
+                  </button>
+                </TableHead>
                 <TableHead className="text-right">Tare (g)</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {sortedProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
                     <Link
@@ -175,11 +295,11 @@ export function ProductList() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/products/${product.id}/edit`}>
-                        <Button variant="ghost" size="icon">
+                      <Button asChild variant="ghost" size="icon">
+                        <Link href={`/products/${product.id}/edit`}>
                           <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"

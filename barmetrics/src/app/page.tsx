@@ -23,12 +23,12 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/products">
-              <Button className="w-full">
+            <Button asChild className="w-full">
+              <Link href="/products">
                 View Products
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 
@@ -41,12 +41,12 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/measure">
-              <Button className="w-full">
+            <Button asChild className="w-full">
+              <Link href="/measure">
                 Measure Now
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 
@@ -59,12 +59,12 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/sessions">
-              <Button className="w-full">
+            <Button asChild className="w-full">
+              <Link href="/sessions">
                 View Sessions
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 
@@ -77,12 +77,12 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/reports">
-              <Button className="w-full">
+            <Button asChild className="w-full">
+              <Link href="/reports">
                 View Reports
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
