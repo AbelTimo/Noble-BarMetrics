@@ -84,10 +84,16 @@ export default function AuditLabelsPage() {
       params.set('offset', String(offset));
 
       const response = await fetch(`/api/audit/labels?${params.toString()}`);
+      if (!response.ok) {
+        // Handle 401 (unauthorized) or other errors silently
+        setData(null);
+        return;
+      }
       const result = await response.json();
       setData(result);
     } catch (error) {
-      console.error('Error fetching audit logs:', error);
+      // Handle network errors silently
+      setData(null);
     } finally {
       setIsLoading(false);
     }
@@ -127,7 +133,7 @@ export default function AuditLabelsPage() {
         <CardContent>
           <div className="space-y-4 mb-6">
             {/* Filter row 1 */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div className="space-y-1">
                 <label className="text-sm text-muted-foreground">Event Type</label>
                 <Select value={eventType} onValueChange={setEventType}>
@@ -171,7 +177,7 @@ export default function AuditLabelsPage() {
             </div>
 
             {/* Filter row 2 */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div className="space-y-1">
                 <label className="text-sm text-muted-foreground">Start Date</label>
                 <Input
@@ -188,12 +194,12 @@ export default function AuditLabelsPage() {
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
-              <div className="flex items-end gap-2 col-span-2">
-                <Button onClick={handleSearch}>
+              <div className="flex items-end gap-2 sm:col-span-2">
+                <Button onClick={handleSearch} className="flex-1 sm:flex-none">
                   <Search className="mr-2 h-4 w-4" />
                   Search
                 </Button>
-                <Button variant="outline" onClick={handleClearFilters}>
+                <Button variant="outline" onClick={handleClearFilters} className="flex-1 sm:flex-none">
                   Clear Filters
                 </Button>
               </div>
@@ -232,7 +238,74 @@ export default function AuditLabelsPage() {
                 Showing {offset + 1}-{Math.min(offset + limit, data.total)} of {data.total} events
               </div>
 
-              <Table>
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {data.events.map((event) => (
+                  <Card key={event.id} className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <Badge
+                          className={getLabelEventColor(event.eventType as any)}
+                          variant="outline"
+                        >
+                          {event.eventType}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(event.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Label: </span>
+                          <Link
+                            href={`/labels/${event.label.id}`}
+                            className="font-mono hover:underline inline-flex items-center gap-1"
+                          >
+                            <QrCode className="h-3 w-3" />
+                            {event.label.code}
+                          </Link>
+                        </div>
+
+                        <div>
+                          <span className="text-muted-foreground">SKU: </span>
+                          <Link
+                            href={`/skus/${event.label.sku.id}`}
+                            className="hover:underline inline-flex items-center gap-1"
+                          >
+                            <Tag className="h-3 w-3" />
+                            {event.label.sku.code}
+                          </Link>
+                        </div>
+
+                        {event.description && (
+                          <div>
+                            <span className="text-muted-foreground">Description: </span>
+                            {event.description}
+                          </div>
+                        )}
+
+                        {event.location && (
+                          <div className="inline-flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-muted-foreground" />
+                            {event.location}
+                          </div>
+                        )}
+
+                        {(event.performedBy || event.userId) && (
+                          <div className="inline-flex items-center gap-1">
+                            <User className="h-3 w-3 text-muted-foreground" />
+                            {event.performedBy || event.userId}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <Table className="hidden md:table">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Timestamp</TableHead>
