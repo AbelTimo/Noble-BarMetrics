@@ -12,45 +12,63 @@ interface QRScannerProps {
 }
 
 export function QRScanner({ onScan, isScanning, onToggleScanning }: QRScannerProps) {
-  const scannerRef = useRef<HTMLDivElement>(null);
-  const html5QrCodeRef = useRef<any>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const qrScannerRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
   const startScanner = async () => {
-    if (!scannerRef.current || html5QrCodeRef.current) return;
+    if (!videoRef.current || qrScannerRef.current) return;
 
     setIsInitializing(true);
     setError(null);
 
     try {
-      const { Html5Qrcode } = await import('html5-qrcode');
+      // Check if mediaDevices API is available
+      if (!navigator?.mediaDevices?.enumerateDevices) {
+        throw new Error('Camera API not supported in this browser. Please use manual entry instead.');
+      }
 
-      const scanner = new Html5Qrcode('qr-reader');
-      html5QrCodeRef.current = scanner;
+      // Check if camera is available
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasCamera = devices.some(device => device.kind === 'videoinput');
 
-      await scanner.start(
-        { facingMode: 'environment' },
+      if (!hasCamera) {
+        throw new Error('No camera found on this device. Please use manual entry instead.');
+      }
+
+      const QrScanner = (await import('qr-scanner')).default;
+
+      const scanner = new QrScanner(
+        videoRef.current,
+        (result) => {
+          onScan(result.data);
+        },
         {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-        },
-        (decodedText) => {
-          onScan(decodedText);
-        },
-        () => {
-          // QR code not found - ignore
+          preferredCamera: 'environment',
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
         }
       );
 
+      qrScannerRef.current = scanner;
+      await scanner.start();
       onToggleScanning(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error starting scanner:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to start camera. Please ensure camera permissions are granted.'
-      );
+      let errorMessage = 'Failed to start camera. ';
+
+      if (err?.message?.includes('not found') || err?.message?.includes('NotFoundError')) {
+        errorMessage = 'Camera not accessible. Please check:\n• Camera permissions in Settings > Safari\n• Camera is not being used by another app\n• Try using manual entry below instead';
+      } else if (err?.message?.includes('NotAllowedError') || err?.message?.includes('Permission')) {
+        errorMessage = 'Camera permission denied. Please allow camera access in your browser settings.';
+      } else if (err?.message?.includes('secure')) {
+        errorMessage = 'Camera requires secure connection. Please use manual entry below.';
+      } else {
+        errorMessage += err instanceof Error ? err.message : 'Please use manual entry below.';
+      }
+
+      setError(errorMessage);
       onToggleScanning(false);
     } finally {
       setIsInitializing(false);
@@ -58,10 +76,11 @@ export function QRScanner({ onScan, isScanning, onToggleScanning }: QRScannerPro
   };
 
   const stopScanner = async () => {
-    if (html5QrCodeRef.current) {
+    if (qrScannerRef.current) {
       try {
-        await html5QrCodeRef.current.stop();
-        html5QrCodeRef.current = null;
+        qrScannerRef.current.stop();
+        qrScannerRef.current.destroy();
+        qrScannerRef.current = null;
       } catch (err) {
         console.error('Error stopping scanner:', err);
       }
@@ -69,10 +88,21 @@ export function QRScanner({ onScan, isScanning, onToggleScanning }: QRScannerPro
     onToggleScanning(false);
   };
 
+  // Auto-start scanner when isScanning prop changes to true
+  useEffect(() => {
+    if (isScanning && !qrScannerRef.current && !isInitializing) {
+      startScanner();
+    } else if (!isScanning && qrScannerRef.current) {
+      stopScanner();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScanning]);
+
   useEffect(() => {
     return () => {
-      if (html5QrCodeRef.current) {
-        html5QrCodeRef.current.stop().catch(console.error);
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop();
+        qrScannerRef.current.destroy();
       }
     };
   }, []);
@@ -111,12 +141,12 @@ export function QRScanner({ onScan, isScanning, onToggleScanning }: QRScannerPro
             </div>
           </div>
 
-          <div
-            id="qr-reader"
-            ref={scannerRef}
-            className={`rounded-lg overflow-hidden bg-black ${
-              isScanning ? 'min-h-[300px]' : 'h-0'
+          <video
+            ref={videoRef}
+            className={`rounded-lg w-full bg-black ${
+              isScanning ? 'block' : 'hidden'
             }`}
+            style={{ maxHeight: '400px', objectFit: 'cover' }}
           />
 
           {error && (

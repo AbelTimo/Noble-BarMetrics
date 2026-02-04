@@ -50,10 +50,16 @@ export function SKUList() {
       if (category && category !== 'all') params.set('category', category);
 
       const response = await fetch(`/api/skus?${params.toString()}`);
+      if (!response.ok) {
+        // Handle 401 (unauthorized) or other errors silently
+        setSKUs([]);
+        return;
+      }
       const data = await response.json();
-      setSKUs(data);
+      setSKUs(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching SKUs:', error);
+      // Handle network errors silently
+      setSKUs([]);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +102,7 @@ export function SKUList() {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4 mb-4">
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -107,7 +113,7 @@ export function SKUList() {
               />
             </div>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
@@ -129,12 +135,74 @@ export function SKUList() {
 
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">Loading...</div>
-        ) : skus.length === 0 ? (
+        ) : !Array.isArray(skus) || skus.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             No SKUs found. Create your first SKU to get started.
           </div>
         ) : (
-          <Table>
+          <>
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {skus.map((sku) => (
+                <Card key={sku.id} className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <Link
+                        href={`/skus/${sku.id}`}
+                        className="font-mono font-bold text-sm hover:underline block mb-1"
+                      >
+                        {sku.code}
+                      </Link>
+                      <p className="font-semibold">{sku.name}</p>
+                    </div>
+                    <Badge variant={sku.isActive ? 'default' : 'secondary'}>
+                      {sku.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2 text-sm mb-3">
+                    <div className="flex items-center gap-2">
+                      <Badge className={getCategoryColor(sku.category)} variant="outline">
+                        {sku.category}
+                      </Badge>
+                      <span className="text-muted-foreground">{sku.sizeMl}ml</span>
+                    </div>
+
+                    {sku.products.length > 0 ? (
+                      <p className="text-muted-foreground">
+                        {sku.products[0].product.brand} {sku.products[0].product.productName}
+                        {sku.products.length > 1 && ` +${sku.products.length - 1}`}
+                      </p>
+                    ) : (
+                      <p className="text-muted-foreground italic">No products linked</p>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">Labels:</span>
+                      <Badge variant="secondary">{sku._count.labels}</Badge>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-3 border-t">
+                    <Button asChild variant="outline" size="sm" className="flex-1">
+                      <Link href={`/labels/generate?skuId=${sku.id}`}>
+                        <QrCode className="mr-2 h-4 w-4" />
+                        Labels
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm" className="flex-1">
+                      <Link href={`/skus/${sku.id}/edit`}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit
+                      </Link>
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <Table className="hidden md:table">
             <TableHeader>
               <TableRow>
                 <TableHead>SKU Code</TableHead>
@@ -201,6 +269,7 @@ export function SKUList() {
               ))}
             </TableBody>
           </Table>
+          </>
         )}
       </CardContent>
     </Card>

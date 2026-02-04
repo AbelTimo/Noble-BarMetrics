@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { QRScanner } from '@/components/scan/qr-scanner';
 import { ManualCodeInput } from '@/components/scan/manual-code-input';
@@ -37,7 +38,8 @@ interface ScanResult {
   }[];
 }
 
-export default function ScanPage() {
+function ScanPageContent() {
+  const searchParams = useSearchParams();
   const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -59,6 +61,20 @@ export default function ScanPage() {
     };
     fetchLocations();
   }, []);
+
+  // Auto-start scanning if auto parameter is present
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const autoStart = searchParams.get('auto') === 'true';
+    const userAgent = window.navigator.userAgent;
+    const isChrome = /Chrome/i.test(userAgent) && !/Safari/i.test(userAgent);
+
+    // Enable auto-start on Chrome or desktop browsers
+    if (autoStart && (isChrome || !/iPhone|iPad|iPod|Android/i.test(userAgent))) {
+      setIsScanning(true);
+    }
+  }, [searchParams]);
 
   const lookupLabel = useCallback(async (rawCode: string) => {
     // Parse the code (handles both direct codes and QR content URLs)
@@ -184,12 +200,20 @@ export default function ScanPage() {
               entered automatically.
             </p>
             <p>
-              <strong>Manual entry:</strong> Type the label code (e.g.,
-              BM-ABC12345) and press Enter.
+              <strong>Manual entry:</strong> Enter the bottle weight in grams
+              and press Enter to calculate remaining volume.
             </p>
           </CardContent>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ScanPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-8 text-center">Loading...</div>}>
+      <ScanPageContent />
+    </Suspense>
   );
 }

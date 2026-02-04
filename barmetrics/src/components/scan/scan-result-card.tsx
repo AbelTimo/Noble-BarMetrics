@@ -22,8 +22,10 @@ import {
   History,
   X,
   Check,
+  Scale,
 } from 'lucide-react';
 import { useState } from 'react';
+import { WeightInput } from './weight-input';
 
 interface ScanResult {
   id: string;
@@ -67,7 +69,7 @@ export function ScanResultCard({
   onAssigned,
   locations,
 }: ScanResultCardProps) {
-  const [showAssign, setShowAssign] = useState(false);
+  const [mode, setMode] = useState<'view' | 'assign' | 'count'>('view');
   const [assignLocation, setAssignLocation] = useState('');
   const [assignPerformedBy, setAssignPerformedBy] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
@@ -89,7 +91,7 @@ export function ScanResultCard({
       });
 
       if (response.ok) {
-        setShowAssign(false);
+        setMode('view');
         onAssigned();
       } else {
         const error = await response.json();
@@ -101,6 +103,11 @@ export function ScanResultCard({
     } finally {
       setIsAssigning(false);
     }
+  };
+
+  const handleCountSaved = () => {
+    setMode('view');
+    onAssigned();
   };
 
   return (
@@ -182,7 +189,16 @@ export function ScanResultCard({
           </div>
         )}
 
-        {showAssign ? (
+        {mode === 'count' ? (
+          <WeightInput
+            labelId={result.id}
+            labelCode={result.code}
+            sku={result.sku}
+            currentLocation={result.location}
+            onCountSaved={handleCountSaved}
+            onCancel={() => setMode('view')}
+          />
+        ) : mode === 'assign' ? (
           <div className="space-y-3 p-4 bg-muted rounded-lg">
             <div className="space-y-2">
               <Label>Location</Label>
@@ -216,7 +232,7 @@ export function ScanResultCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowAssign(false)}
+                onClick={() => setMode('view')}
               >
                 Cancel
               </Button>
@@ -231,16 +247,27 @@ export function ScanResultCard({
             </div>
           </div>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {result.status !== 'RETIRED' && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAssign(true)}
-              >
-                <MapPin className="mr-2 h-4 w-4" />
-                {result.status === 'ASSIGNED' ? 'Reassign' : 'Assign'}
-              </Button>
+              <>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setMode('count')}
+                  className="flex-1 min-w-[140px]"
+                >
+                  <Scale className="mr-2 h-4 w-4" />
+                  Count Inventory
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMode('assign')}
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  {result.status === 'ASSIGNED' ? 'Reassign' : 'Assign'}
+                </Button>
+              </>
             )}
             <Button asChild variant="outline" size="sm">
               <Link href={`/labels/${result.id}`}>

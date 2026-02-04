@@ -95,6 +95,11 @@ model SKU {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Weight-based inventory fields (optional)
+  bottleTareG   Float?                    // Average empty bottle weight in grams
+  densityGPerMl Float?                    // Liquid density (g/ml) - if null, calculate from ABV
+  abvPercent    Float?                    // Alcohol by volume % - used to calculate density if densityGPerMl is null
+
   products    ProductSKU[]
   labels      Label[]
   batches     LabelBatch[]
@@ -147,7 +152,7 @@ model Label {
 model LabelEvent {
   id          String   @id @default(cuid())
   labelId     String
-  eventType   String   // CREATED, ASSIGNED, LOCATION_CHANGED, RETIRED, REPRINTED, SCANNED
+  eventType   String   // CREATED, ASSIGNED, LOCATION_CHANGED, RETIRED, REPRINTED, SCANNED, COUNT
   description String?
   location    String?
   fromValue   String?  // JSON: previous state
@@ -157,6 +162,14 @@ model LabelEvent {
   performedBy String?  // Human-readable name (legacy)
   createdAt   DateTime @default(now())
 
+  // Weight-based inventory count fields (for COUNT event type)
+  grossWeightG      Float?   // Total weight including bottle (grams)
+  netLiquidG        Float?   // Calculated liquid weight (grams)
+  remainingVolumeMl Float?   // Calculated remaining volume (ml)
+  remainingPercent  Float?   // Percentage full
+  offlineQueued     Boolean  @default(false)  // Was this saved offline and queued?
+  syncedAt          DateTime?                 // When offline event was synced
+
   label       Label    @relation(fields: [labelId], references: [id], onDelete: Cascade)
   user        User?    @relation("LabelEventUser", fields: [userId], references: [id])
 
@@ -164,6 +177,7 @@ model LabelEvent {
   @@index([eventType])
   @@index([createdAt])
   @@index([userId])
+  @@index([offlineQueued])
 }
 
 model LabelBatch {

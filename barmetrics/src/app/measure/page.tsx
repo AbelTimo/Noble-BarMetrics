@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { MeasurementResult } from '@/components/measurements/measurement-result';
 import { calculateVolumeFromWeight, DEFAULT_STANDARD_POUR_ML } from '@/lib/calculations';
-import { Scale, RotateCcw } from 'lucide-react';
+import { Scale, RotateCcw, Calculator } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -47,7 +47,7 @@ export default function QuickMeasurePage() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
+  const handleCalculate = () => {
     if (selectedProduct && grossWeight) {
       const tareWeight =
         selectedProduct.calibrations[0]?.tareWeightG ||
@@ -63,10 +63,8 @@ export default function QuickMeasurePage() {
         });
         setResult(calcResult);
       }
-    } else {
-      setResult(null);
     }
-  }, [selectedProduct, grossWeight, standardPour]);
+  };
 
   const handleProductSelect = (productId: string) => {
     const product = products.find((p) => p.id === productId);
@@ -164,14 +162,24 @@ export default function QuickMeasurePage() {
             </>
           )}
 
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="w-full"
-          >
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleCalculate}
+              disabled={!selectedProduct || !grossWeight}
+              className="flex-1"
+            >
+              <Calculator className="mr-2 h-4 w-4" />
+              Calculate
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="flex-1"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reset
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
