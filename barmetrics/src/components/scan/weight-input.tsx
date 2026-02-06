@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Scale, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Scale, AlertTriangle, CheckCircle2, Loader2, Bluetooth } from 'lucide-react';
+import { BluetoothScaleConnect } from './bluetooth-scale-connect';
 import {
   calculateVolumeFromWeight,
   getBottleTareWeight,
@@ -55,6 +56,8 @@ export function WeightInput({
   const [grossWeightG, setGrossWeightG] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
+  const [showBluetoothSetup, setShowBluetoothSetup] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus weight input
@@ -123,6 +126,15 @@ export function WeightInput({
     }
   };
 
+  const handleBluetoothWeight = (weightG: number) => {
+    // Auto-populate weight from Bluetooth scale
+    setGrossWeightG(weightG.toFixed(1));
+  };
+
+  const handleBluetoothConnection = (connected: boolean) => {
+    setIsBluetoothConnected(connected);
+  };
+
   if (!bottleTareG) {
     return (
       <Alert variant="destructive">
@@ -154,10 +166,34 @@ export function WeightInput({
         </div>
       </div>
 
+      {/* Bluetooth Scale Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Bluetooth Scale (Optional)</span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowBluetoothSetup(!showBluetoothSetup)}
+          >
+            <Bluetooth className="mr-2 h-4 w-4" />
+            {isBluetoothConnected ? 'Connected' : 'Setup'}
+          </Button>
+        </div>
+
+        {showBluetoothSetup && (
+          <BluetoothScaleConnect
+            onWeightReceived={handleBluetoothWeight}
+            onConnectionChange={handleBluetoothConnection}
+          />
+        )}
+      </div>
+
       {/* Weight Input */}
       <div className="space-y-2">
         <Label htmlFor="weight" className="text-base font-medium">
           Gross Weight (grams) <span className="text-red-500">*</span>
+          {isBluetoothConnected && <span className="ml-2 text-xs text-green-600">(Auto-filled from scale)</span>}
         </Label>
         <Input
           id="weight"
