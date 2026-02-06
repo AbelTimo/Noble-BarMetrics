@@ -21,11 +21,6 @@ export default function Home() {
             <div className="h-px w-8 sm:w-12 bg-[#3E3226]/30" />
           </div>
 
-          {/* Est. badge */}
-          <div className="text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.35em] uppercase mb-2 text-[#3E3226]/60 font-bold">
-            Established 2026
-          </div>
-
           {/* Main title */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 tracking-[0.15em] sm:tracking-[0.25em] uppercase text-[#3E3226]">
             BarMetrics

@@ -76,7 +76,7 @@ export function NavHeader() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4" suppressHydrationWarning>
           {isLoading ? (
             <div className="text-sm text-[#3E3226]/50">Loading...</div>
           ) : isAuthenticated && user ? (

@@ -1,0 +1,246 @@
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Package, Scale, ClipboardList, FileBarChart, QrCode, Tag, ScanLine, FileText, ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto py-12 px-4">
+        {/* Hero Section */}
+        <div className="mb-12">
+          <Badge className="mb-4 bg-white/10 text-white border-white/20 hover:bg-white/20">
+            <Sparkles className="h-3 w-3 mr-1" />
+            QR Label System Live
+          </Badge>
+          <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
+            BarMetrics
+          </h1>
+          <p className="text-xl text-gray-400 max-w-2xl">
+            Complete bar inventory management with QR labels and bottle weight tracking
+          </p>
+        </div>
+
+        {/* Bento Box Grid - QR Label System */}
+        <div className="mb-8">
+          <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-6 font-medium">
+            QR Label System
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            {/* SKUs - Regular card */}
+            <Link href="/skus" className="group block">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl">
+                <div className="flex flex-col h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-3xl font-bold mb-3 group-hover:text-blue-400 transition-colors">
+                      SKUs
+                    </h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Manage stock keeping units
+                    </p>
+                  </div>
+                  <div className="mt-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Tag className="h-16 w-16" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Labels - Regular card */}
+            <Link href="/labels" className="group block">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl">
+                <div className="flex flex-col h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-3xl font-bold mb-3 group-hover:text-purple-400 transition-colors">
+                      Labels
+                    </h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Generate and print QR labels
+                    </p>
+                  </div>
+                  <div className="mt-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <QrCode className="h-16 w-16" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Scan - Accent card with gradient - spans 2 columns */}
+            <Link href="/scan" className="group block md:col-span-2">
+              <Card className="bg-gradient-to-br from-green-500 to-emerald-600 border-0 hover:from-green-400 hover:to-emerald-500 transition-all duration-300 h-full p-8 rounded-3xl relative overflow-hidden">
+                <div className="flex flex-col h-full relative z-10">
+                  <div className="mb-auto">
+                    <h3 className="text-4xl font-bold mb-3">
+                      Scan QR Labels
+                    </h3>
+                    <p className="text-green-100 text-sm uppercase tracking-wide">
+                      Scan labels to view and manage items instantly
+                    </p>
+                  </div>
+                  <div className="mt-8 flex items-center gap-2">
+                    <Button size="lg" variant="secondary" className="bg-white text-green-700 hover:bg-gray-100">
+                      Start Scanning
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 opacity-20">
+                  <ScanLine className="h-32 w-32" strokeWidth={1} />
+                </div>
+              </Card>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Audit - spans 2 columns */}
+            <Link href="/audit/labels" className="group block md:col-span-2">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl relative overflow-hidden">
+                <div className="flex flex-col md:flex-row justify-between items-start h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-3xl font-bold mb-3 group-hover:text-orange-400 transition-colors">
+                      Audit Trail
+                    </h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Complete history of all label operations
+                    </p>
+                  </div>
+                  <div className="mt-8 md:mt-0 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <FileText className="h-20 w-20" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Quick Stats Card */}
+            <Card className="bg-gradient-to-br from-orange-500 to-red-500 border-0 h-full p-8 rounded-3xl relative overflow-hidden">
+              <div className="flex flex-col h-full relative z-10">
+                <div className="mb-auto">
+                  <div className="text-5xl font-bold mb-2">100%</div>
+                  <p className="text-orange-100 text-sm uppercase tracking-wide">
+                    Test Success Rate
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-orange-100">
+                  <TrendingUp className="h-5 w-5" />
+                  <span className="text-sm">All systems operational</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Inventory Management Section */}
+        <div className="mt-12">
+          <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-6 font-medium">
+            Inventory Management
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Products */}
+            <Link href="/products" className="group block">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl">
+                <div className="flex flex-col h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-2xl font-bold mb-3">Products</h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Product catalog
+                    </p>
+                  </div>
+                  <div className="mt-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Package className="h-12 w-12" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Quick Measure */}
+            <Link href="/measure" className="group block">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl">
+                <div className="flex flex-col h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-2xl font-bold mb-3">Measure</h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Quick measurement
+                    </p>
+                  </div>
+                  <div className="mt-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Scale className="h-12 w-12" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Sessions */}
+            <Link href="/sessions" className="group block">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl">
+                <div className="flex flex-col h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-2xl font-bold mb-3">Sessions</h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Stock-take sessions
+                    </p>
+                  </div>
+                  <div className="mt-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <ClipboardList className="h-12 w-12" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            {/* Reports */}
+            <Link href="/reports" className="group block">
+              <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition-all duration-300 h-full p-8 rounded-3xl">
+                <div className="flex flex-col h-full">
+                  <div className="mb-auto">
+                    <h3 className="text-2xl font-bold mb-3">Reports</h3>
+                    <p className="text-gray-500 text-sm uppercase tracking-wide">
+                      Export & analytics
+                    </p>
+                  </div>
+                  <div className="mt-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <FileBarChart className="h-12 w-12" strokeWidth={1} />
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          </div>
+        </div>
+
+        {/* How It Works - Horizontal Cards */}
+        <div className="mt-12">
+          <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-6 font-medium">
+            How It Works
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-zinc-900 border-zinc-800 p-8 rounded-3xl">
+              <div className="text-4xl font-bold text-gray-700 mb-4">01</div>
+              <h3 className="text-xl font-bold mb-2">Define Products</h3>
+              <p className="text-gray-500 text-sm">
+                Add liquor products with brand, ABV, and bottle size. Calibrate tare weights.
+              </p>
+            </Card>
+
+            <Card className="bg-zinc-900 border-zinc-800 p-8 rounded-3xl">
+              <div className="text-4xl font-bold text-gray-700 mb-4">02</div>
+              <h3 className="text-xl font-bold mb-2">Weigh Bottles</h3>
+              <p className="text-gray-500 text-sm">
+                Place bottles on scale. The app calculates remaining volume using density.
+              </p>
+            </Card>
+
+            <Card className="bg-zinc-900 border-zinc-800 p-8 rounded-3xl">
+              <div className="text-4xl font-bold text-gray-700 mb-4">03</div>
+              <h3 className="text-xl font-bold mb-2">Track Inventory</h3>
+              <p className="text-gray-500 text-sm">
+                See remaining volume, percentage full, and pours. Export for analysis.
+              </p>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

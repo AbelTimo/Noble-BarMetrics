@@ -120,6 +120,32 @@ model ProductSKU {
   @@unique([productId, skuId])
 }
 
+model BottleWeightDatabase {
+  id              String   @id @default(cuid())
+  brand           String
+  productName     String
+  category        String   // VODKA, WHISKEY, etc.
+  sizeMl          Int      // 750, 1000, etc.
+  bottleType      String?  // "Standard Glass", "Heavy Bottom", "Ceramic", etc.
+  tareWeightG     Float    // Empty bottle weight
+  fullWeightG     Float?   // Full bottle weight (calculated or measured)
+  abvPercent      Float?   // Typical ABV for this product
+  upc             String?  // UPC/barcode if known
+  manufacturer    String?  // Bottle manufacturer
+  countryOfOrigin String?
+  verified        Boolean  @default(false) // User-verified accuracy
+  source          String   @default("system") // "system", "user", "import"
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([brand, productName, sizeMl])
+  @@index([brand])
+  @@index([category])
+  @@index([sizeMl])
+  @@index([upc])
+}
+
 model Label {
   id                 String      @id @default(cuid())
   code               String      @unique
