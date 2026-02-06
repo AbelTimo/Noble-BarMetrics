@@ -16,6 +16,8 @@ import { skuSchema, type SKUFormData } from '@/lib/validations';
 import { LIQUOR_CATEGORIES, BOTTLE_SIZES } from '@/lib/calculations';
 import { generateSKUCode } from '@/lib/labels';
 import { useEffect, useState } from 'react';
+import { BottleDatabaseSearch } from './bottle-database-search';
+import { Separator } from '@/components/ui/separator';
 
 interface SKUFormProps {
   defaultValues?: Partial<SKUFormData>;
@@ -167,6 +169,89 @@ export function SKUForm({
         {errors.description && (
           <p className="text-sm text-destructive">{errors.description.message}</p>
         )}
+      </div>
+
+      <Separator className="my-6" />
+
+      {/* Weight-Based Inventory Section */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-medium">Weight-Based Inventory (Optional)</h3>
+          <p className="text-sm text-muted-foreground">
+            Configure bottle weights for automatic volume calculation from scale measurements.
+          </p>
+        </div>
+
+        {/* Bottle Database Search */}
+        <div className="space-y-2">
+          <Label>Quick Setup from Database</Label>
+          <BottleDatabaseSearch
+            currentSize={sizeMl}
+            currentCategory={category}
+            onSelect={(bottle) => {
+              setValue('bottleTareG', bottle.tareWeightG);
+              if (bottle.abvPercent) {
+                setValue('abvPercent', bottle.abvPercent);
+              }
+            }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Search our database of 100+ bottles to auto-fill tare weight and ABV
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="bottleTareG">
+              Tare Weight (g)
+              <span className="ml-1 text-xs text-muted-foreground">(empty bottle)</span>
+            </Label>
+            <Input
+              id="bottleTareG"
+              type="number"
+              step="0.1"
+              {...register('bottleTareG', { valueAsNumber: true })}
+              placeholder="e.g., 480"
+            />
+            {errors.bottleTareG && (
+              <p className="text-sm text-destructive">{errors.bottleTareG.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="abvPercent">
+              ABV %
+              <span className="ml-1 text-xs text-muted-foreground">(alcohol content)</span>
+            </Label>
+            <Input
+              id="abvPercent"
+              type="number"
+              step="0.1"
+              {...register('abvPercent', { valueAsNumber: true })}
+              placeholder="e.g., 40"
+            />
+            {errors.abvPercent && (
+              <p className="text-sm text-destructive">{errors.abvPercent.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="densityGPerMl">
+              Density (g/ml)
+              <span className="ml-1 text-xs text-muted-foreground">(optional)</span>
+            </Label>
+            <Input
+              id="densityGPerMl"
+              type="number"
+              step="0.001"
+              {...register('densityGPerMl', { valueAsNumber: true })}
+              placeholder="Auto-calc from ABV"
+            />
+            <p className="text-xs text-muted-foreground">
+              Leave blank to auto-calculate from ABV
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

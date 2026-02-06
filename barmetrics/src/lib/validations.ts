@@ -231,6 +231,22 @@ export const skuSchema = z.object({
   unit: skuUnitSchema.default('ml'),
   barcode: z.string().max(50, 'Barcode must be 50 characters or less').optional().nullable(),
   isActive: z.boolean().default(true),
+  // Weight-based inventory fields (optional)
+  bottleTareG: z.number()
+    .min(0, 'Tare weight must be positive')
+    .max(5000, 'Tare weight cannot exceed 5000g')
+    .optional()
+    .nullable(),
+  densityGPerMl: z.number()
+    .min(0.7, 'Density must be at least 0.7 g/ml')
+    .max(1.1, 'Density cannot exceed 1.1 g/ml')
+    .optional()
+    .nullable(),
+  abvPercent: z.number()
+    .min(0, 'ABV must be at least 0%')
+    .max(100, 'ABV cannot exceed 100%')
+    .optional()
+    .nullable(),
 });
 
 export const skuCreateSchema = skuSchema;
