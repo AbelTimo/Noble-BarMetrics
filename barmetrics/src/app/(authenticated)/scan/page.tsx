@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QRScanner } from '@/components/scan/qr-scanner';
 import { ManualCodeInput } from '@/components/scan/manual-code-input';
 import { ScanResultCard } from '@/components/scan/scan-result-card';
@@ -13,6 +13,16 @@ export default function ScanPage() {
   const [labelData, setLabelData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [locations, setLocations] = useState<string[]>([]);
+
+  // Fetch locations on mount
+  useEffect(() => {
+    fetch('/api/labels/locations')
+      .then(res => res.json())
+      .then(data => setLocations(data.map((loc: any) => loc.name)))
+      .catch(() => setLocations(['Main Bar', 'Back Bar', 'Stock Room', 'Walk-in Cooler', 'Service Bar']));
+  }, []);
 
   const handleScan = async (code: string) => {
     setScannedCode(code);
@@ -49,6 +59,13 @@ export default function ScanPage() {
     setError(null);
   };
 
+  const handleAssigned = () => {
+    // Refresh the label data after assignment
+    if (scannedCode) {
+      handleScan(scannedCode);
+    }
+  };
+
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <div className="mb-8">
@@ -73,11 +90,15 @@ export default function ScanPage() {
             </TabsList>
 
             <TabsContent value="camera" className="mt-6">
-              <QRScanner onScan={handleScan} />
+              <QRScanner
+                onScan={handleScan}
+                isScanning={isScanning}
+                onToggleScanning={setIsScanning}
+              />
             </TabsContent>
 
             <TabsContent value="manual" className="mt-6">
-              <ManualCodeInput onSubmit={handleScan} />
+              <ManualCodeInput onSubmit={handleScan} isLoading={isLoading} />
             </TabsContent>
           </Tabs>
         </Card>
@@ -100,7 +121,12 @@ export default function ScanPage() {
         )}
 
         {labelData && !isLoading && (
-          <ScanResultCard data={labelData} onReset={handleReset} />
+          <ScanResultCard
+            result={labelData}
+            onClose={handleReset}
+            onAssigned={handleAssigned}
+            locations={locations}
+          />
         )}
       </div>
     </div>
