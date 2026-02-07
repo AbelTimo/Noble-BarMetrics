@@ -6,6 +6,61 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API
  */
 
+// Type declarations for Web Bluetooth API
+declare global {
+  interface Navigator {
+    bluetooth?: Bluetooth;
+  }
+}
+
+interface Bluetooth {
+  requestDevice(options?: RequestDeviceOptions): Promise<BluetoothDevice>;
+  getAvailability(): Promise<boolean>;
+}
+
+interface RequestDeviceOptions {
+  filters?: BluetoothLEScanFilter[];
+  optionalServices?: BluetoothServiceUUID[];
+  acceptAllDevices?: boolean;
+}
+
+interface BluetoothLEScanFilter {
+  services?: BluetoothServiceUUID[];
+  name?: string;
+  namePrefix?: string;
+}
+
+type BluetoothServiceUUID = number | string;
+
+interface BluetoothDevice extends EventTarget {
+  id: string;
+  name?: string;
+  gatt?: BluetoothRemoteGATTServer;
+}
+
+interface BluetoothRemoteGATTServer {
+  device: BluetoothDevice;
+  connected: boolean;
+  connect(): Promise<BluetoothRemoteGATTServer>;
+  disconnect(): void;
+  getPrimaryService(service: BluetoothServiceUUID): Promise<BluetoothRemoteGATTService>;
+}
+
+interface BluetoothRemoteGATTService {
+  device: BluetoothDevice;
+  uuid: string;
+  getCharacteristic(characteristic: BluetoothServiceUUID): Promise<BluetoothRemoteGATTCharacteristic>;
+}
+
+interface BluetoothRemoteGATTCharacteristic extends EventTarget {
+  service: BluetoothRemoteGATTService;
+  uuid: string;
+  value?: DataView;
+  startNotifications(): Promise<BluetoothRemoteGATTCharacteristic>;
+  stopNotifications(): Promise<BluetoothRemoteGATTCharacteristic>;
+  readValue(): Promise<DataView>;
+}
+
 // Common BLE service UUIDs for scales
 const SCALE_SERVICES = {
   // Generic Weight Scale Service
@@ -59,6 +114,10 @@ export class BluetoothScaleManager {
   async requestDevice(): Promise<ScaleDevice> {
     if (!BluetoothScaleManager.isSupported()) {
       throw new Error('Bluetooth is not supported in this browser');
+    }
+
+    if (!navigator.bluetooth) {
+      throw new Error('Bluetooth API not available');
     }
 
     try {

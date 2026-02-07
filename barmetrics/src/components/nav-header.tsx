@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, X, PackagePlus } from 'lucide-react';
+import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, X, PackagePlus, QrCode, Tags } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import { PERMISSIONS, getRoleDisplayName, getRoleBadgeColor } from '@/lib/permissions';
 import { useState, useEffect, useRef } from 'react';
@@ -13,6 +13,8 @@ const navItems = [
   { href: '/dashboard', label: 'Home', icon: Wine, permission: null },
   { href: '/products', label: 'Products', icon: Package, permission: null },
   { href: '/skus', label: 'SKUs', icon: Tag, permission: PERMISSIONS.SKU_VIEW },
+  { href: '/labels', label: 'Labels', icon: Tags, permission: PERMISSIONS.LABEL_VIEW },
+  { href: '/scan', label: 'Scan QR', icon: QrCode, permission: null },
   { href: '/weigh', label: 'Weigh & Track', icon: Scale, permission: null },
   { href: '/requests', label: 'Requests', icon: PackagePlus, permission: null },
   { href: '/sessions', label: 'Sessions', icon: ClipboardList, permission: null },

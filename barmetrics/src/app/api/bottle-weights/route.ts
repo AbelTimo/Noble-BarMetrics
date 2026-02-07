@@ -13,15 +13,17 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // Search across brand and product name
+    // Note: SQLite doesn't support mode: 'insensitive', so we use contains without it
+    // For PostgreSQL in production, you can add mode: 'insensitive'
     if (search) {
       where.OR = [
-        { brand: { contains: search, mode: 'insensitive' } },
-        { productName: { contains: search, mode: 'insensitive' } },
+        { brand: { contains: search } },
+        { productName: { contains: search } },
       ];
     }
 
     if (brand) {
-      where.brand = { contains: brand, mode: 'insensitive' };
+      where.brand = { contains: brand };
     }
 
     if (category) {
