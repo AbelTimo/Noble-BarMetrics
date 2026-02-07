@@ -4,20 +4,18 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, QrCode, Scan, History, Users, LogOut, LogIn, Settings, Menu, X } from 'lucide-react';
+import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, X, PackagePlus } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import { PERMISSIONS, getRoleDisplayName, getRoleBadgeColor } from '@/lib/permissions';
 import { useState, useEffect, useRef } from 'react';
 
 const navItems = [
-  { href: '/', label: 'Home', icon: Wine, permission: null },
+  { href: '/dashboard', label: 'Home', icon: Wine, permission: null },
   { href: '/products', label: 'Products', icon: Package, permission: null },
   { href: '/skus', label: 'SKUs', icon: Tag, permission: PERMISSIONS.SKU_VIEW },
-  { href: '/labels', label: 'Labels', icon: QrCode, permission: PERMISSIONS.LABEL_VIEW },
-  { href: '/scan', label: 'Scan', icon: Scan, permission: PERMISSIONS.LABEL_SCAN },
-  { href: '/measure', label: 'Measure', icon: Scale, permission: null },
+  { href: '/weigh', label: 'Weigh & Track', icon: Scale, permission: null },
+  { href: '/requests', label: 'Requests', icon: PackagePlus, permission: null },
   { href: '/sessions', label: 'Sessions', icon: ClipboardList, permission: null },
-  { href: '/audit/labels', label: 'Audit', icon: History, permission: PERMISSIONS.AUDIT_VIEW },
   { href: '/reports', label: 'Reports', icon: FileBarChart, permission: null },
   { href: '/users', label: 'Users', icon: Users, permission: PERMISSIONS.USER_VIEW },
 ];
@@ -59,7 +57,7 @@ export function NavHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-[#3E3226]/10 bg-[#D4C5B0]/95 backdrop-blur text-[#3E3226]">
       <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3 relative">
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-70 transition-opacity">
+          <Link href="/dashboard" className="flex items-center space-x-2 hover:opacity-70 transition-opacity">
             <Wine className="h-6 w-6 text-[#3E3226]/80" strokeWidth={1.5} />
             <span className="hidden font-bold sm:inline-block tracking-[0.25em] uppercase text-[#3E3226]">BarMetrics</span>
           </Link>

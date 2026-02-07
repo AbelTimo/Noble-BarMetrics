@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
 import "./globals.css";
-import { NavHeader } from "@/components/nav-header";
 import { Providers } from "@/components/providers";
 import { Toaster } from "sonner";
 
@@ -28,10 +27,7 @@ export default function RootLayout({
         className={`${raleway.variable} antialiased min-h-screen font-raleway`}
       >
         <Providers>
-          <NavHeader />
-          <main className="min-h-[calc(100vh-3.5rem)]">
-            {children}
-          </main>
+          {children}
           <Toaster position="bottom-center" richColors closeButton={false} expand={false} visibleToasts={1} />
         </Providers>
       </body>

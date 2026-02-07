@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
-import { Package, FileBarChart, QrCode, Tag, ScanLine, FileText, ArrowRight, Wine } from 'lucide-react';
+import { Package, FileBarChart, Scale, Tag, FileText, ArrowRight, Wine } from 'lucide-react';
 
 export default function Home() {
 
@@ -30,7 +30,7 @@ export default function Home() {
           <div className="flex items-center justify-center gap-2 sm:gap-4 text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.3em] uppercase mb-3 sm:mb-4 font-semibold">
             <span>Inventory</span>
             <span className="text-[#3E3226]/40">|</span>
-            <span>QR Labels</span>
+            <span>Bluetooth Scale</span>
             <span className="text-[#3E3226]/40">|</span>
             <span>Analytics</span>
           </div>
@@ -52,49 +52,36 @@ export default function Home() {
         <div className="mb-12 sm:mb-16">
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
-            {/* 1. Scan & Track - Featured (PRIMARY POSITION) */}
-            <Link href="/scan?auto=true" className="group">
+            {/* 1. Weigh & Track - Featured (PRIMARY POSITION) */}
+            <Link href="/weigh" className="group">
               <Card className="bg-[#9C8B7A]/40 backdrop-blur border-[#3E3226]/30 hover:border-[#3E3226]/50 transition-all duration-500 h-full p-6 sm:p-8 md:p-12 shadow-[0_6px_20px_rgb(62,50,38,0.12)] sm:shadow-[0_12px_40px_rgb(62,50,38,0.18)] hover:shadow-[0_15px_50px_rgb(62,50,38,0.28)] sm:hover:shadow-[0_25px_70px_rgb(62,50,38,0.35)] hover:-translate-y-1.5 sm:-translate-y-2 sm:hover:-translate-y-4 overflow-hidden relative">
-                {/* Animated scanning lines */}
+                {/* Animated pulse effect */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3E3226]/5 to-transparent animate-scan" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#3E3226]/5 to-transparent" />
                 </div>
                 <div className="flex flex-col items-center text-center h-full relative z-10">
                   <div className="mb-4 sm:mb-6 md:mb-8 w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full bg-[#F5F0E8]/95 backdrop-blur flex items-center justify-center shadow-[3px_3px_6px_rgba(62,50,38,0.3),-3px_-3px_6px_rgba(62,50,38,0.15)] sm:shadow-[5px_5px_10px_rgba(62,50,38,0.35),-5px_-5px_10px_rgba(62,50,38,0.18)] group-hover:shadow-[6px_6px_12px_rgba(62,50,38,0.4),-6px_-6px_12px_rgba(62,50,38,0.2)] sm:group-hover:shadow-[8px_8px_16px_rgba(62,50,38,0.45),-8px_-8px_16px_rgba(62,50,38,0.22)] transition-all duration-500 group-hover:scale-105 sm:group-hover:scale-110 relative overflow-hidden">
                     {/* Subtle inner shadow for depth */}
                     <div className="absolute inset-0 rounded-full shadow-[inset_2px_2px_4px_rgba(62,50,38,0.04)] sm:shadow-[inset_3px_3px_6px_rgba(62,50,38,0.06)]" />
-                    {/* Elegant Scanning Frame Icon */}
-                    <svg className="h-11 w-11 sm:h-13 sm:w-13 md:h-16 md:w-16 text-[#3E3226]/70 group-hover:text-[#3E3226] transition-all duration-500 relative z-10" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      {/* Top corners */}
-                      <path d="M12 12H20M12 12V20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M52 12H44M52 12V20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                      {/* Bottom corners */}
-                      <path d="M12 52H20M12 52V44" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M52 52H44M52 52V44" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                      {/* Center scan line */}
-                      <path d="M16 32H48" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.6"/>
-                      {/* Animated dots */}
-                      <circle cx="24" cy="32" r="1.5" fill="currentColor" opacity="0.8"/>
-                      <circle cx="32" cy="32" r="2" fill="currentColor"/>
-                      <circle cx="40" cy="32" r="1.5" fill="currentColor" opacity="0.8"/>
-                    </svg>
+                    {/* Scale Icon */}
+                    <Scale className="h-11 w-11 sm:h-13 sm:w-13 md:h-16 md:w-16 text-[#3E3226]/70 group-hover:text-[#3E3226] transition-all duration-500 relative z-10" strokeWidth={1.5} />
                   </div>
                   <h3 className="text-xl sm:text-2xl md:text-3xl tracking-[0.12em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase font-bold mb-2 sm:mb-3 md:mb-4 text-[#3E3226]">
-                    Scan & Track
+                    Weigh & Track
                   </h3>
                   <p className="text-[10px] sm:text-xs tracking-[0.15em] sm:tracking-[0.25em] uppercase text-[#3E3226]/70 mb-2 sm:mb-3 md:mb-4 font-semibold">
-                    QR Labels & Recognition
+                    Bluetooth Scale Integration
                   </p>
                   <p className="text-xs sm:text-sm text-[#3E3226]/60 leading-relaxed mb-4 sm:mb-6 md:mb-8 px-2">
-                    Generate QR labels, scan items instantly, and track inventory in real-time
+                    Connect your Bluetooth scale and weigh bottles automatically for accurate inventory tracking
                   </p>
                   <div className="mt-auto flex flex-col gap-1 sm:gap-2 w-full">
                     <div className="text-[10px] sm:text-xs text-[#3E3226]/50 flex items-center justify-center gap-1.5 sm:gap-2">
-                      <QrCode className="h-2.5 w-2.5 sm:h-3 sm:w-3" strokeWidth={1.5} />
-                      <span>Labels</span>
+                      <Scale className="h-2.5 w-2.5 sm:h-3 sm:w-3" strokeWidth={1.5} />
+                      <span>Bluetooth</span>
                       <span>•</span>
-                      <ScanLine className="h-2.5 w-2.5 sm:h-3 sm:w-3" strokeWidth={1.5} />
-                      <span>Scan</span>
+                      <Wine className="h-2.5 w-2.5 sm:h-3 sm:w-3" strokeWidth={1.5} />
+                      <span>Auto-Weigh</span>
                     </div>
                     <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 text-[#3E3226]/60 group-hover:text-[#3E3226]/80 group-hover:translate-x-1 transition-all mx-auto mt-1 sm:mt-2" strokeWidth={1.5} />
                   </div>
@@ -139,8 +126,8 @@ export default function Home() {
               </Card>
             </Link>
 
-            {/* 3. Reports - Audit + Analytics */}
-            <Link href="/audit/labels" className="group">
+            {/* 3. Reports - Analytics */}
+            <Link href="/reports" className="group">
               <Card className="bg-[#9C8B7A]/40 backdrop-blur border-[#3E3226]/30 hover:border-[#3E3226]/50 transition-all duration-500 h-full p-6 sm:p-8 md:p-12 shadow-[0_6px_20px_rgb(62,50,38,0.12)] sm:shadow-[0_12px_40px_rgb(62,50,38,0.18)] hover:shadow-[0_15px_50px_rgb(62,50,38,0.28)] sm:hover:shadow-[0_25px_70px_rgb(62,50,38,0.35)] hover:-translate-y-1.5 sm:-translate-y-2 sm:hover:-translate-y-4 overflow-hidden relative">
                 <div className="flex flex-col items-center text-center h-full relative z-10">
                   <div className="mb-4 sm:mb-6 md:mb-8 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full bg-[#F5F0E8]/95 backdrop-blur flex items-center justify-center shadow-[3px_3px_6px_rgba(62,50,38,0.3),-3px_-3px_6px_rgba(62,50,38,0.15)] sm:shadow-[5px_5px_10px_rgba(62,50,38,0.35),-5px_-5px_10px_rgba(62,50,38,0.18)] group-hover:shadow-[6px_6px_12px_rgba(62,50,38,0.4),-6px_-6px_12px_rgba(62,50,38,0.2)] sm:group-hover:shadow-[8px_8px_16px_rgba(62,50,38,0.45),-8px_-8px_16px_rgba(62,50,38,0.22)] transition-all duration-500 group-hover:scale-105 sm:group-hover:scale-110 relative overflow-hidden">

@@ -374,3 +374,57 @@ export const skuFilterSchema = z.object({
 });
 
 export type SKUFilterParams = z.infer<typeof skuFilterSchema>;
+
+// ============================================
+// Liquor Request Schemas
+// ============================================
+
+// Urgency levels
+export const requestUrgencySchema = z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']);
+export type RequestUrgency = z.infer<typeof requestUrgencySchema>;
+
+// Request status
+export const requestStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'FULFILLED']);
+export type RequestStatus = z.infer<typeof requestStatusSchema>;
+
+// Create liquor request
+export const liquorRequestCreateSchema = z.object({
+  skuId: z.string().optional().nullable(),
+  productId: z.string().optional().nullable(),
+  quantity: z.number()
+    .int('Quantity must be a whole number')
+    .min(1, 'Quantity must be at least 1')
+    .max(1000, 'Quantity cannot exceed 1000'),
+  urgency: requestUrgencySchema.default('NORMAL'),
+  reason: z.string().max(200, 'Reason must be 200 characters or less').optional().nullable(),
+  notes: z.string().max(500, 'Notes must be 500 characters or less').optional().nullable(),
+}).refine(
+  (data) => data.skuId || data.productId,
+  { message: 'Either SKU or Product must be specified' }
+);
+
+export type LiquorRequestCreateData = z.infer<typeof liquorRequestCreateSchema>;
+
+// Update request (for review)
+export const liquorRequestReviewSchema = z.object({
+  status: z.enum(['APPROVED', 'REJECTED'], { message: 'Status must be APPROVED or REJECTED' }),
+  reviewNotes: z.string().max(500, 'Review notes must be 500 characters or less').optional().nullable(),
+});
+
+export type LiquorRequestReviewData = z.infer<typeof liquorRequestReviewSchema>;
+
+// Mark as fulfilled
+export const liquorRequestFulfillSchema = z.object({
+  notes: z.string().max(500, 'Notes must be 500 characters or less').optional().nullable(),
+});
+
+export type LiquorRequestFulfillData = z.infer<typeof liquorRequestFulfillSchema>;
+
+// Filter requests
+export const liquorRequestFilterSchema = z.object({
+  status: requestStatusSchema.optional(),
+  urgency: requestUrgencySchema.optional(),
+  requestedBy: z.string().optional(),
+});
+
+export type LiquorRequestFilterParams = z.infer<typeof liquorRequestFilterSchema>;

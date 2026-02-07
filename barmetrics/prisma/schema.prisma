@@ -23,6 +23,7 @@ model Product {
   calibrations    BottleCalibration[]
   measurements    BottleMeasurement[]
   productSkus     ProductSKU[]
+  liquorRequests  LiquorRequest[]
 }
 
 model BottleCalibration {
@@ -100,9 +101,10 @@ model SKU {
   densityGPerMl Float?                    // Liquid density (g/ml) - if null, calculate from ABV
   abvPercent    Float?                    // Alcohol by volume % - used to calculate density if densityGPerMl is null
 
-  products    ProductSKU[]
-  labels      Label[]
-  batches     LabelBatch[]
+  products       ProductSKU[]
+  labels         Label[]
+  batches        LabelBatch[]
+  liquorRequests LiquorRequest[]
 
   @@index([barcode])
 }
@@ -246,9 +248,11 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  sessions     Session[]
-  labelBatches LabelBatch[] @relation("LabelBatchCreator")
-  labelEvents  LabelEvent[] @relation("LabelEventUser")
+  sessions         Session[]
+  labelBatches     LabelBatch[]     @relation("LabelBatchCreator")
+  labelEvents      LabelEvent[]     @relation("LabelEventUser")
+  requestsCreated  LiquorRequest[]  @relation("RequestedBy")
+  requestsReviewed LiquorRequest[]  @relation("ReviewedBy")
 
   @@index([role])
   @@index([isActive])
@@ -267,4 +271,32 @@ model Session {
   @@index([token])
   @@index([userId])
   @@index([expiresAt])
+}
+
+model LiquorRequest {
+  id           String    @id @default(cuid())
+  skuId        String?
+  productId    String?
+  quantity     Int
+  urgency      String    @default("NORMAL") // "LOW", "NORMAL", "HIGH", "URGENT"
+  reason       String?
+  notes        String?
+  status       String    @default("PENDING") // "PENDING", "APPROVED", "REJECTED", "FULFILLED"
+  requestedBy  String
+  requestedAt  DateTime  @default(now())
+  reviewedBy   String?
+  reviewedAt   DateTime?
+  reviewNotes  String?
+  fulfilledAt  DateTime?
+  updatedAt    DateTime  @updatedAt
+
+  sku          SKU?      @relation(fields: [skuId], references: [id], onDelete: SetNull)
+  product      Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  requester    User      @relation("RequestedBy", fields: [requestedBy], references: [id])
+  reviewer     User?     @relation("ReviewedBy", fields: [reviewedBy], references: [id])
+
+  @@index([status])
+  @@index([requestedBy])
+  @@index([requestedAt])
+  @@index([urgency])
 }
