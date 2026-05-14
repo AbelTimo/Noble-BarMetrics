@@ -17,8 +17,15 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+interface SignupInput {
+  username: string;
+  displayName: string;
+  pin: string;
+}
+
 interface AuthContextType extends AuthState {
   login: (username: string, pin: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (input: SignupInput) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
   hasPermission: (permission: Permission) => boolean;
@@ -96,6 +103,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refreshAuth]);
 
+  const signup = useCallback(async (input: SignupInput) => {
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(input),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await refreshAuth();
+        return { success: true };
+      }
+      return { success: false, error: data.error || 'Signup failed' };
+    } catch {
+      return { success: false, error: 'Network error' };
+    }
+  }, [refreshAuth]);
+
   const logout = useCallback(async () => {
     try {
       await fetch('/api/auth/logout', {
@@ -132,6 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value: AuthContextType = {
     ...state,
     login,
+    signup,
     logout,
     refreshAuth,
     hasPermission: checkPermission,
