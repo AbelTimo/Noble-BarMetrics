@@ -428,3 +428,67 @@ export const liquorRequestFilterSchema = z.object({
 });
 
 export type LiquorRequestFilterParams = z.infer<typeof liquorRequestFilterSchema>;
+
+// ============================================
+// Recipe Management Schemas
+// ============================================
+
+export const RECIPE_CATEGORIES = ['COCKTAIL', 'SHOT', 'NEAT', 'ON_THE_ROCKS', 'CUSTOM'] as const;
+export const RECIPE_METHODS = ['SHAKEN', 'STIRRED', 'BUILT', 'BLENDED'] as const;
+
+export const recipeIngredientSchema = z.object({
+  productId: z.string().min(1, 'Product is required'),
+  quantityMl: z.number()
+    .min(0.5, 'Quantity must be at least 0.5ml')
+    .max(1000, 'Quantity cannot exceed 1000ml'),
+});
+
+export const recipeSchema = z.object({
+  name: z.string().min(1, 'Recipe name is required').max(100, 'Name must be 100 characters or less'),
+  category: z.enum(RECIPE_CATEGORIES, { message: 'Please select a valid category' }),
+  description: z.string().max(500).optional().nullable(),
+  glassType: z.string().max(50).optional().nullable(),
+  garnish: z.string().max(100).optional().nullable(),
+  method: z.enum(RECIPE_METHODS).optional().nullable(),
+  isActive: z.boolean().default(true),
+  ingredients: z.array(recipeIngredientSchema).min(1, 'At least one ingredient is required'),
+});
+
+export const recipeCreateSchema = recipeSchema;
+export const recipeUpdateSchema = recipeSchema.partial().extend({
+  ingredients: z.array(recipeIngredientSchema).min(1, 'At least one ingredient is required').optional(),
+});
+
+export type RecipeFormData = z.infer<typeof recipeSchema>;
+export type RecipeIngredientData = z.infer<typeof recipeIngredientSchema>;
+
+// ============================================
+// Sales Tracking Schemas
+// ============================================
+
+export const SALE_SHIFTS = ['MORNING', 'AFTERNOON', 'EVENING', 'NIGHT'] as const;
+export const SALE_ITEM_TYPES = ['COCKTAIL', 'SHOT', 'NEAT', 'BOTTLE'] as const;
+
+export const saleItemSchema = z.object({
+  type: z.enum(SALE_ITEM_TYPES, { message: 'Please select a valid type' }),
+  recipeId: z.string().optional().nullable(),
+  productId: z.string().optional().nullable(),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1').max(9999),
+  notes: z.string().max(200).optional().nullable(),
+}).refine(
+  (data) => data.recipeId || data.productId,
+  { message: 'Either recipe or product must be specified' }
+);
+
+export const saleSchema = z.object({
+  date: z.string().min(1, 'Date is required'),
+  shift: z.enum(SALE_SHIFTS).optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+  source: z.enum(['MANUAL', 'CSV_IMPORT']).default('MANUAL'),
+  items: z.array(saleItemSchema).min(1, 'At least one sale item is required'),
+});
+
+export const saleCreateSchema = saleSchema;
+
+export type SaleFormData = z.infer<typeof saleSchema>;
+export type SaleItemData = z.infer<typeof saleItemSchema>;

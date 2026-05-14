@@ -20,10 +20,12 @@ model Product {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  calibrations    BottleCalibration[]
-  measurements    BottleMeasurement[]
-  productSkus     ProductSKU[]
-  liquorRequests  LiquorRequest[]
+  calibrations       BottleCalibration[]
+  measurements       BottleMeasurement[]
+  productSkus        ProductSKU[]
+  liquorRequests     LiquorRequest[]
+  recipeIngredients  RecipeIngredient[]
+  saleItems          SaleItem[]
 }
 
 model BottleCalibration {
@@ -232,6 +234,78 @@ model Location {
   createdAt DateTime @default(now())
 
   labels    Label[]
+}
+
+// ============================================
+// Recipe Management Models
+// ============================================
+
+model Recipe {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String   // COCKTAIL, SHOT, NEAT, ON_THE_ROCKS, CUSTOM
+  description String?
+  glassType   String?
+  garnish     String?
+  method      String?  // SHAKEN, STIRRED, BUILT, BLENDED
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ingredients RecipeIngredient[]
+  salesItems  SaleItem[]
+
+  @@index([category])
+}
+
+model RecipeIngredient {
+  id        String @id @default(cuid())
+  recipeId  String
+  productId String
+  quantityMl Float
+
+  recipe  Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, productId])
+  @@index([productId])
+}
+
+// ============================================
+// Sales Tracking Models
+// ============================================
+
+model Sale {
+  id        String   @id @default(cuid())
+  date      DateTime @default(now())
+  shift     String?  // MORNING, AFTERNOON, EVENING, NIGHT
+  notes     String?
+  source    String   @default("MANUAL") // MANUAL, CSV_IMPORT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items SaleItem[]
+
+  @@index([date])
+  @@index([shift])
+}
+
+model SaleItem {
+  id        String @id @default(cuid())
+  saleId    String
+  type      String // COCKTAIL, SHOT, NEAT, BOTTLE
+  recipeId  String?
+  productId String?
+  quantity  Int
+  notes     String?
+
+  sale    Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  recipe  Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([saleId])
+  @@index([recipeId])
+  @@index([productId])
 }
 
 // ============================================

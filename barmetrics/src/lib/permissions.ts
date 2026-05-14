@@ -37,6 +37,20 @@ export const PERMISSIONS = {
   // Audit permissions
   AUDIT_VIEW: 'audit:view',
 
+  // Recipe permissions
+  RECIPE_VIEW: 'recipe:view',
+  RECIPE_CREATE: 'recipe:create',
+  RECIPE_UPDATE: 'recipe:update',
+  RECIPE_DELETE: 'recipe:delete',
+
+  // Sales permissions
+  SALE_VIEW: 'sale:view',
+  SALE_CREATE: 'sale:create',
+  SALE_DELETE: 'sale:delete',
+
+  // Variance permissions
+  VARIANCE_VIEW: 'variance:view',
+
   // User management permissions
   USER_VIEW: 'user:view',
   USER_CREATE: 'user:create',
@@ -55,6 +69,9 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.LABEL_SCAN,
     PERMISSIONS.SKU_VIEW,
     PERMISSIONS.LOCATION_VIEW,
+    PERMISSIONS.RECIPE_VIEW,
+    PERMISSIONS.SALE_VIEW,
+    PERMISSIONS.SALE_CREATE,
   ],
 
   STOREKEEPER: [
@@ -63,12 +80,17 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.LABEL_SCAN,
     PERMISSIONS.SKU_VIEW,
     PERMISSIONS.LOCATION_VIEW,
+    PERMISSIONS.RECIPE_VIEW,
+    PERMISSIONS.SALE_VIEW,
+    PERMISSIONS.SALE_CREATE,
     // Additional storekeeper permissions
     PERMISSIONS.LABEL_GENERATE,
     PERMISSIONS.LABEL_ASSIGN,
     PERMISSIONS.LABEL_CHANGE_LOCATION,
     PERMISSIONS.LOCATION_CREATE,
     PERMISSIONS.AUDIT_VIEW,
+    PERMISSIONS.RECIPE_CREATE,
+    PERMISSIONS.VARIANCE_VIEW,
   ],
 
   MANAGER: [

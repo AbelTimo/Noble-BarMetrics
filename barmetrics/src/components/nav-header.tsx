@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, X, PackagePlus, QrCode, Tags } from 'lucide-react';
+import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, X, PackagePlus, QrCode, Tags, MapPin, CookingPot, DollarSign, TrendingDown, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import { PERMISSIONS, getRoleDisplayName, getRoleBadgeColor } from '@/lib/permissions';
+import { BluetoothStatusIndicator } from '@/components/bluetooth-status-indicator';
 import { useState, useEffect, useRef } from 'react';
 
 const navItems = [
@@ -14,10 +15,15 @@ const navItems = [
   { href: '/products', label: 'Products', icon: Package, permission: null },
   { href: '/skus', label: 'SKUs', icon: Tag, permission: PERMISSIONS.SKU_VIEW },
   { href: '/labels', label: 'Labels', icon: Tags, permission: PERMISSIONS.LABEL_VIEW },
+  { href: '/locations', label: 'Locations', icon: MapPin, permission: PERMISSIONS.LOCATION_VIEW },
   { href: '/scan', label: 'Scan QR', icon: QrCode, permission: null },
   { href: '/weigh', label: 'Weigh & Track', icon: Scale, permission: null },
   { href: '/requests', label: 'Requests', icon: PackagePlus, permission: null },
+  { href: '/recipes', label: 'Recipes', icon: CookingPot, permission: PERMISSIONS.RECIPE_VIEW },
+  { href: '/sales', label: 'Sales', icon: DollarSign, permission: PERMISSIONS.SALE_VIEW },
   { href: '/sessions', label: 'Sessions', icon: ClipboardList, permission: null },
+  { href: '/variance', label: 'Variance', icon: TrendingDown, permission: PERMISSIONS.VARIANCE_VIEW },
+  { href: '/daily-report', label: 'Daily Report', icon: FileText, permission: PERMISSIONS.VARIANCE_VIEW },
   { href: '/reports', label: 'Reports', icon: FileBarChart, permission: null },
   { href: '/users', label: 'Users', icon: Users, permission: PERMISSIONS.USER_VIEW },
 ];
@@ -81,6 +87,7 @@ export function NavHeader() {
             <div className="text-sm text-[#3E3226]/50">Loading...</div>
           ) : isAuthenticated && user ? (
             <div className="flex items-center gap-3">
+              <BluetoothStatusIndicator />
               <div className="hidden sm:flex items-center gap-2">
                 <span className="text-sm font-medium text-[#3E3226]">{user.displayName}</span>
                 <span className={cn('px-2 py-0.5 text-xs font-medium rounded', getRoleBadgeColor(user.role))}>
