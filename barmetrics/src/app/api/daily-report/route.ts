@@ -94,19 +94,22 @@ export async function GET(request: NextRequest) {
     }
 
     // Sales summary
-    const salesSummary = sales.flatMap((s) =>
-      s.items.map((item) => ({
-        type: item.type,
-        name: item.recipe?.name || (item.product ? `${item.product.brand} ${item.product.productName}` : 'Unknown'),
-        quantity: item.quantity,
-        shift: s.shift,
-      }))
-    );
+    const salesSummary: { type: string; name: string; quantity: number; shift: string | null }[] = [];
+    for (const s of sales) {
+      for (const item of s.items) {
+        salesSummary.push({
+          type: item.type,
+          name: item.recipe?.name || (item.product ? `${item.product.brand} ${item.product.productName}` : 'Unknown'),
+          quantity: item.quantity,
+          shift: s.shift,
+        });
+      }
+    }
 
-    const totalSalesItems = salesSummary.reduce((s, i) => s + i.quantity, 0);
-    const totalOpeningMl = Object.values(stockSummary).reduce((s, p) => s + p.openingMl, 0);
-    const totalClosingMl = Object.values(stockSummary).reduce((s, p) => s + p.closingMl, 0);
-    const totalDepletionMl = Object.values(stockSummary).reduce((s, p) => s + Math.max(0, p.depletionMl), 0);
+    const totalSalesItems = salesSummary.reduce((sum: number, i) => sum + i.quantity, 0);
+    const totalOpeningMl = Object.values(stockSummary).reduce((sum: number, p) => sum + p.openingMl, 0);
+    const totalClosingMl = Object.values(stockSummary).reduce((sum: number, p) => sum + p.closingMl, 0);
+    const totalDepletionMl = Object.values(stockSummary).reduce((sum: number, p) => sum + Math.max(0, p.depletionMl), 0);
 
     const report = {
       date,
