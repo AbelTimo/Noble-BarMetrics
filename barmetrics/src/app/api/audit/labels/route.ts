@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       limit,
       offset,
       eventTypeCounts: eventTypeCounts.reduce(
-        (acc, item) => {
+        (acc: Record<string, number>, item: { eventType: string; _count: { eventType: number } }) => {
           acc[item.eventType] = item._count.eventType;
           return acc;
         },
