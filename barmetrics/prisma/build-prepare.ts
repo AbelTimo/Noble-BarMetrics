@@ -22,7 +22,7 @@ function run(cmd: string, args: string[]): number {
   return result.status ?? 1;
 }
 
-const url = process.env.DATABASE_URL;
+const url = process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL;
 const isLibSql = !!url && LIBSQL_SCHEMES.some((s) => url.startsWith(s));
 
 if (isLibSql) {

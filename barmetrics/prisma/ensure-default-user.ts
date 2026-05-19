@@ -6,7 +6,7 @@ import path from 'path';
 const LIBSQL_SCHEMES = ['libsql://', 'https://', 'http://', 'wss://', 'ws://'];
 
 function createPrismaClient(): PrismaClient {
-  const url = process.env.DATABASE_URL;
+  const url = process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (url && LIBSQL_SCHEMES.some((scheme) => url.startsWith(scheme))) {

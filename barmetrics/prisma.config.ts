@@ -2,7 +2,7 @@ import "dotenv/config";
 import { defineConfig } from "prisma/config";
 import path from "path";
 
-const envUrl = process.env.DATABASE_URL;
+const envUrl = process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL;
 
 // Default to the local SQLite file when no URL is set or when an unscoped
 // "file:./..." path is provided. For libsql/Turso/Postgres URLs we pass the
