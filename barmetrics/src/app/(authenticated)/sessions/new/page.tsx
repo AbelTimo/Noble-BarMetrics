@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ClipboardList, Zap, Copy, Calendar } from 'lucide-react';
+import { ClipboardList, Zap, Copy, Calendar, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DEFAULT_STANDARD_POUR_ML } from '@/lib/calculations';
 
@@ -28,17 +28,26 @@ interface Session {
   _count: { measurements: number };
 }
 
+interface Location {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  isActive: boolean;
+}
+
 type SessionMode = 'standard' | 'quick_count';
 
 export default function NewSessionPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
+  const [customLocation, setCustomLocation] = useState('');
   const [mode, setMode] = useState<SessionMode>('standard');
   const [sourceSessionId, setSourceSessionId] = useState<string>('');
   const [defaultPourMl, setDefaultPourMl] = useState(String(DEFAULT_STANDARD_POUR_ML));
   const [isLoading, setIsLoading] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [templatePreview, setTemplatePreview] = useState<{ totalProducts: number } | null>(null);
 
   // Fetch completed sessions for quick count source
@@ -59,6 +68,22 @@ export default function NewSessionPage() {
       }
     };
     fetchSessions();
+  }, []);
+
+  // Fetch locations
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch('/api/locations');
+        if (response.ok) {
+          const data = await response.json();
+          setLocations(data);
+        }
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+    };
+    fetchLocations();
   }, []);
 
   // Fetch template preview when source session selected
@@ -101,7 +126,7 @@ export default function NewSessionPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name || `${mode === 'quick_count' ? 'Quick Count' : 'Session'} ${new Date().toLocaleDateString()}`,
-          location: location || null,
+          location: location === '__custom__' ? customLocation : (location || null),
           mode,
           sourceSessionId: mode === 'quick_count' ? sourceSessionId : null,
           defaultPourMl: parseFloat(defaultPourMl) || DEFAULT_STANDARD_POUR_ML,
@@ -249,13 +274,38 @@ export default function NewSessionPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g., Main Bar, Patio Bar"
-                />
+                <Label htmlFor="location" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Location
+                </Label>
+                <Select value={location} onValueChange={(value) => {
+                  setLocation(value);
+                  if (value !== '__custom__') {
+                    setCustomLocation('');
+                  }
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locations.map((loc) => (
+                      <SelectItem key={loc.id || loc.name} value={loc.name}>
+                        {loc.name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="__custom__">
+                      + Add new location...
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {location === '__custom__' && (
+                  <Input
+                    value={customLocation}
+                    onChange={(e) => setCustomLocation(e.target.value)}
+                    placeholder="Enter new location name"
+                    autoFocus
+                  />
+                )}
               </div>
             </div>
 

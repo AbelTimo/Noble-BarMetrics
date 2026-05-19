@@ -10,20 +10,38 @@ export async function GET(request: NextRequest) {
     // Require location view permission
     await requirePermission(request, PERMISSIONS.LOCATION_VIEW);
 
+    const searchParams = request.nextUrl.searchParams;
+    const includeInactive = searchParams.get('includeInactive') === 'true';
+    const withCounts = searchParams.get('withCounts') === 'true';
+
+    // Build where clause
+    const where: Record<string, unknown> = {};
+    if (!includeInactive) {
+      where.isActive = true;
+    }
+
     // Get all locations from database
     const locations = await prisma.location.findMany({
-      where: { isActive: true },
+      where,
+      include: withCounts ? {
+        _count: {
+          select: {
+            labels: true,
+          },
+        },
+      } : undefined,
       orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
     });
 
     // If no locations exist, return default locations
-    if (locations.length === 0) {
+    if (locations.length === 0 && !includeInactive) {
       return NextResponse.json(
         DEFAULT_LOCATIONS.map((name) => ({
           id: null,
           name,
           isDefault: true,
           isActive: true,
+          _count: { labels: 0 },
         }))
       );
     }

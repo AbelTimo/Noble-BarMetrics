@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { BluetoothScaleConnect } from '@/components/scan/bluetooth-scale-connect';
+import { useBluetoothScale } from '@/contexts/bluetooth-scale-context';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
@@ -57,7 +57,7 @@ function WeighTrackPageContent() {
   const [selectedSKU, setSelectedSKU] = useState<SKU | null>(null);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [grossWeightG, setGrossWeightG] = useState<string>('');
-  const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
+  const { isConnected: isBluetoothConnected, lastReading, connect: connectScale, disconnect: disconnectScale, device: scaleDevice, isConnecting: isScaleConnecting, isSupported: isScaleSupported } = useBluetoothScale();
   const [calculation, setCalculation] = useState<ReturnType<typeof calculateVolumeFromWeight> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -109,6 +109,13 @@ function WeighTrackPageContent() {
     }
   }, [searchQuery, skus]);
 
+  // Auto-fill weight from Bluetooth scale
+  useEffect(() => {
+    if (lastReading) {
+      setGrossWeightG(lastReading.weightG.toFixed(1));
+    }
+  }, [lastReading]);
+
   // Calculate volume when weight changes
   useEffect(() => {
     if (selectedSKU && grossWeightG && selectedSKU.bottleTareG) {
@@ -129,14 +136,6 @@ function WeighTrackPageContent() {
       setCalculation(null);
     }
   }, [selectedSKU, grossWeightG]);
-
-  const handleBluetoothWeight = useCallback((weightG: number) => {
-    setGrossWeightG(weightG.toFixed(1));
-  }, []);
-
-  const handleBluetoothConnection = useCallback((connected: boolean) => {
-    setIsBluetoothConnected(connected);
-  }, []);
 
   const handleSKUSelect = (skuId: string) => {
     const sku = skus.find((s) => s.id === skuId);
@@ -236,23 +235,51 @@ function WeighTrackPageContent() {
         {/* Left Column: Setup & Input */}
         <div className="space-y-4">
           {/* Bluetooth Scale Connection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Bluetooth Scale
-              </CardTitle>
-              <CardDescription>
-                Connect your scale for automatic weight capture
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BluetoothScaleConnect
-                onWeightReceived={handleBluetoothWeight}
-                onConnectionChange={handleBluetoothConnection}
-              />
-            </CardContent>
-          </Card>
+          {isScaleSupported && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Bluetooth Scale
+                </CardTitle>
+                <CardDescription>
+                  {isBluetoothConnected && scaleDevice
+                    ? `Connected to ${scaleDevice.name}`
+                    : 'Connect your scale for automatic weight capture'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isBluetoothConnected && scaleDevice ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
+                        <CheckCircle className="h-4 w-4" />
+                        {scaleDevice.name}
+                      </span>
+                      <Button variant="outline" size="sm" onClick={disconnectScale}>
+                        Disconnect
+                      </Button>
+                    </div>
+                    {lastReading && (
+                      <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4 text-center">
+                        <p className="text-sm text-muted-foreground mb-1">Current Weight</p>
+                        <p className="text-3xl font-bold text-green-700">
+                          {lastReading.weightG.toFixed(1)}g
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Place bottle on scale — weight auto-fills below.
+                    </p>
+                  </div>
+                ) : (
+                  <Button onClick={connectScale} disabled={isScaleConnecting} className="w-full">
+                    {isScaleConnecting ? 'Pairing...' : 'Connect Bluetooth Scale'}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Session Selection */}
           {sessions.length > 0 && (

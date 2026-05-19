@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Scale, AlertTriangle, CheckCircle2, Loader2, Bluetooth } from 'lucide-react';
-import { BluetoothScaleConnect } from './bluetooth-scale-connect';
+import { Scale, AlertTriangle, CheckCircle2, Loader2, Bluetooth, BluetoothConnected } from 'lucide-react';
+import { useBluetoothScale } from '@/contexts/bluetooth-scale-context';
 import {
   calculateVolumeFromWeight,
   getBottleTareWeight,
@@ -56,14 +56,21 @@ export function WeightInput({
   const [grossWeightG, setGrossWeightG] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
-  const [showBluetoothSetup, setShowBluetoothSetup] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { isSupported, isConnected, isConnecting, lastReading, connect, device } = useBluetoothScale();
 
   // Auto-focus weight input
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // Auto-fill weight from Bluetooth scale
+  useEffect(() => {
+    if (lastReading) {
+      setGrossWeightG(lastReading.weightG.toFixed(1));
+    }
+  }, [lastReading]);
 
   // Get bottle tare weight
   const bottleTareG = getBottleTareWeight(sku);
@@ -126,15 +133,6 @@ export function WeightInput({
     }
   };
 
-  const handleBluetoothWeight = (weightG: number) => {
-    // Auto-populate weight from Bluetooth scale
-    setGrossWeightG(weightG.toFixed(1));
-  };
-
-  const handleBluetoothConnection = (connected: boolean) => {
-    setIsBluetoothConnected(connected);
-  };
-
   if (!bottleTareG) {
     return (
       <Alert variant="destructive">
@@ -166,34 +164,35 @@ export function WeightInput({
         </div>
       </div>
 
-      {/* Bluetooth Scale Section */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Bluetooth Scale (Optional)</span>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setShowBluetoothSetup(!showBluetoothSetup)}
-          >
-            <Bluetooth className="mr-2 h-4 w-4" />
-            {isBluetoothConnected ? 'Connected' : 'Setup'}
-          </Button>
+      {/* Inline Bluetooth Status */}
+      {isSupported && (
+        <div className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50">
+          {isConnected && device ? (
+            <span className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
+              <BluetoothConnected className="h-4 w-4" />
+              {device.name} — auto-filling
+            </span>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={connect}
+              disabled={isConnecting}
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+            >
+              <Bluetooth className="h-4 w-4" />
+              {isConnecting ? 'Pairing...' : 'Connect Scale'}
+            </Button>
+          )}
         </div>
-
-        {showBluetoothSetup && (
-          <BluetoothScaleConnect
-            onWeightReceived={handleBluetoothWeight}
-            onConnectionChange={handleBluetoothConnection}
-          />
-        )}
-      </div>
+      )}
 
       {/* Weight Input */}
       <div className="space-y-2">
         <Label htmlFor="weight" className="text-base font-medium">
           Gross Weight (grams) <span className="text-red-500">*</span>
-          {isBluetoothConnected && <span className="ml-2 text-xs text-green-600">(Auto-filled from scale)</span>}
+          {isConnected && <span className="ml-2 text-xs text-green-600">(Auto-filled from scale)</span>}
         </Label>
         <Input
           id="weight"
@@ -213,7 +212,7 @@ export function WeightInput({
         />
         <p className={`text-xs text-center ${hasError ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
           {hasError
-            ? `⚠️ Must be at least ${bottleTareG}g (empty bottle weight)`
+            ? `Must be at least ${bottleTareG}g (empty bottle weight)`
             : 'Place bottle on scale and enter the weight shown'
           }
         </p>
@@ -227,7 +226,7 @@ export function WeightInput({
               <AlertTriangle className="h-5 w-5 text-red-600" />
               <AlertDescription className="text-red-900 font-semibold">
                 {calculation.errors.map((err, i) => (
-                  <p key={i}>❌ {err}</p>
+                  <p key={i}>{err}</p>
                 ))}
               </AlertDescription>
             </Alert>

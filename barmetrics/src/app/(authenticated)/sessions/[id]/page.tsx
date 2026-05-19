@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -14,6 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { MeasurementForm } from '@/components/measurements/measurement-form';
 import { QuickCountForm } from '@/components/measurements/quick-count-form';
 import { BottleVisual } from '@/components/measurements/bottle-visual';
@@ -27,6 +35,10 @@ import {
   Zap,
   AlertTriangle,
   SkipForward,
+  MapPin,
+  Pencil,
+  Check,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -67,11 +79,38 @@ interface Session {
   measurements: Measurement[];
 }
 
+interface Location {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  isActive: boolean;
+}
+
 export default function SessionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [isEditingLocation, setIsEditingLocation] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [customLocation, setCustomLocation] = useState('');
+
+  // Fetch locations
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch('/api/locations');
+        if (response.ok) {
+          const data = await response.json();
+          setLocations(data);
+        }
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+    };
+    fetchLocations();
+  }, []);
 
   const fetchSession = async () => {
     try {
@@ -104,6 +143,36 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
     } catch (error) {
       console.error('Error completing session:', error);
     }
+  };
+
+  const handleChangeLocation = async () => {
+    const newLocation = selectedLocation === '__custom__' ? customLocation : selectedLocation;
+    if (!newLocation) return;
+
+    try {
+      await fetch(`/api/sessions/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location: newLocation }),
+      });
+      setIsEditingLocation(false);
+      setSelectedLocation('');
+      setCustomLocation('');
+      fetchSession();
+    } catch (error) {
+      console.error('Error updating location:', error);
+    }
+  };
+
+  const startEditingLocation = () => {
+    setSelectedLocation(session?.location || '');
+    setIsEditingLocation(true);
+  };
+
+  const cancelEditingLocation = () => {
+    setIsEditingLocation(false);
+    setSelectedLocation('');
+    setCustomLocation('');
   };
 
   const handleDeleteMeasurement = async (measurementId: string) => {
@@ -168,8 +237,57 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground mt-1">
-            {session.location && <span>{session.location}</span>}
+          <div className="flex items-center gap-4 text-muted-foreground mt-1 flex-wrap">
+            {isEditingLocation ? (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <Select value={selectedLocation} onValueChange={(value) => {
+                  setSelectedLocation(value);
+                  if (value !== '__custom__') {
+                    setCustomLocation('');
+                  }
+                }}>
+                  <SelectTrigger className="w-[180px] h-8">
+                    <SelectValue placeholder="Select location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locations.map((loc) => (
+                      <SelectItem key={loc.id || loc.name} value={loc.name}>
+                        {loc.name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="__custom__">
+                      + Add new location...
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {selectedLocation === '__custom__' && (
+                  <Input
+                    value={customLocation}
+                    onChange={(e) => setCustomLocation(e.target.value)}
+                    placeholder="New location"
+                    className="w-[150px] h-8"
+                    autoFocus
+                  />
+                )}
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleChangeLocation}>
+                  <Check className="h-4 w-4 text-green-600" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEditingLocation}>
+                  <X className="h-4 w-4 text-red-600" />
+                </Button>
+              </div>
+            ) : (
+              <span className="flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                {session.location || 'No location'}
+                {!session.completedAt && (
+                  <Button size="icon" variant="ghost" className="h-6 w-6 ml-1" onClick={startEditingLocation}>
+                    <Pencil className="h-3 w-3" />
+                  </Button>
+                )}
+              </span>
+            )}
             <span>
               Started: {new Date(session.startedAt).toLocaleString()}
             </span>

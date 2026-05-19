@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Bluetooth, BluetoothConnected, BluetoothOff, Scale, AlertTriangle } from 'lucide-react';
-import { BluetoothScaleManager, getScaleManager, type ScaleDevice } from '@/lib/bluetooth-scale';
+import { useBluetoothScale } from '@/contexts/bluetooth-scale-context';
 
 interface BluetoothScaleConnectProps {
   onWeightReceived?: (weightG: number) => void;
@@ -16,71 +16,28 @@ export function BluetoothScaleConnect({
   onWeightReceived,
   onConnectionChange,
 }: BluetoothScaleConnectProps) {
-  const [isSupported, setIsSupported] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectedDevice, setConnectedDevice] = useState<ScaleDevice | null>(null);
-  const [lastWeight, setLastWeight] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    isSupported,
+    isConnected,
+    isConnecting,
+    device,
+    lastReading,
+    error,
+    connect,
+    disconnect,
+  } = useBluetoothScale();
 
+  // Forward weight readings to callback prop
   useEffect(() => {
-    setIsSupported(BluetoothScaleManager.isSupported());
-  }, []);
+    if (lastReading && onWeightReceived) {
+      onWeightReceived(lastReading.weightG);
+    }
+  }, [lastReading, onWeightReceived]);
 
+  // Forward connection changes to callback prop
   useEffect(() => {
-    if (!isSupported) return;
-
-    const manager = getScaleManager();
-
-    // Register callbacks
-    manager.onWeight((reading) => {
-      setLastWeight(reading.weightG);
-      onWeightReceived?.(reading.weightG);
-    });
-
-    manager.onConnectionChange((connected) => {
-      if (!connected) {
-        setConnectedDevice(null);
-      }
-      onConnectionChange?.(connected);
-    });
-
-    // Check if already connected
-    const device = manager.getDevice();
-    if (device?.connected) {
-      setConnectedDevice(device);
-    }
-  }, [isSupported, onWeightReceived, onConnectionChange]);
-
-  const handleConnect = async () => {
-    setIsConnecting(true);
-    setError(null);
-
-    try {
-      const manager = getScaleManager();
-
-      // Request device pairing
-      const device = await manager.requestDevice();
-      setConnectedDevice(device);
-
-      // Connect to device
-      await manager.connect();
-
-      setConnectedDevice({ ...device, connected: true });
-    } catch (err: any) {
-      console.error('Bluetooth connection error:', err);
-      setError(err.message || 'Failed to connect to scale');
-      setConnectedDevice(null);
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const handleDisconnect = async () => {
-    const manager = getScaleManager();
-    await manager.disconnect();
-    setConnectedDevice(null);
-    setLastWeight(null);
-  };
+    onConnectionChange?.(isConnected);
+  }, [isConnected, onConnectionChange]);
 
   if (!isSupported) {
     return (
@@ -104,16 +61,16 @@ export function BluetoothScaleConnect({
               <h3 className="font-medium">Bluetooth Scale</h3>
             </div>
 
-            {connectedDevice?.connected ? (
+            {isConnected && device ? (
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-sm text-green-600">
                   <BluetoothConnected className="h-4 w-4" />
-                  {connectedDevice.name}
+                  {device.name}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleDisconnect}
+                  onClick={disconnect}
                 >
                   <BluetoothOff className="mr-2 h-4 w-4" />
                   Disconnect
@@ -122,7 +79,7 @@ export function BluetoothScaleConnect({
             ) : (
               <Button
                 size="sm"
-                onClick={handleConnect}
+                onClick={connect}
                 disabled={isConnecting}
               >
                 {isConnecting ? (
@@ -141,11 +98,11 @@ export function BluetoothScaleConnect({
           </div>
 
           {/* Current Weight Display */}
-          {connectedDevice?.connected && lastWeight !== null && (
+          {isConnected && lastReading && (
             <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4 text-center">
               <p className="text-sm text-muted-foreground mb-1">Current Weight</p>
               <p className="text-3xl font-bold text-green-700">
-                {lastWeight.toFixed(1)}g
+                {lastReading.weightG.toFixed(1)}g
               </p>
             </div>
           )}
@@ -159,7 +116,7 @@ export function BluetoothScaleConnect({
           )}
 
           {/* Instructions */}
-          {!connectedDevice?.connected && (
+          {!isConnected && (
             <div className="text-xs text-muted-foreground space-y-1">
               <p><strong>How to connect:</strong></p>
               <ol className="list-decimal list-inside space-y-1 ml-2">
@@ -174,7 +131,7 @@ export function BluetoothScaleConnect({
             </div>
           )}
 
-          {connectedDevice?.connected && (
+          {isConnected && (
             <p className="text-xs text-muted-foreground">
               Scale connected. Place bottle on scale to automatically capture weight.
             </p>

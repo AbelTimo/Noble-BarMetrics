@@ -98,8 +98,8 @@ export interface ScaleDevice {
 
 export class BluetoothScaleManager {
   private device: ScaleDevice | null = null;
-  private onWeightCallback: ((reading: ScaleReading) => void) | null = null;
-  private onConnectionCallback: ((connected: boolean) => void) | null = null;
+  private weightListeners = new Set<(reading: ScaleReading) => void>();
+  private connectionListeners = new Set<(connected: boolean) => void>();
 
   /**
    * Check if Web Bluetooth API is supported
@@ -169,13 +169,13 @@ export class BluetoothScaleManager {
 
       this.device.server = server;
       this.device.connected = true;
-      this.onConnectionCallback?.(true);
+      this.connectionListeners.forEach(cb => cb(true));
 
       // Try to find the weight measurement characteristic
       await this.discoverCharacteristics();
     } catch (error: any) {
       this.device.connected = false;
-      this.onConnectionCallback?.(false);
+      this.connectionListeners.forEach(cb => cb(false));
       throw new Error(`Failed to connect: ${error.message}`);
     }
   }
@@ -232,7 +232,7 @@ export class BluetoothScaleManager {
 
     try {
       const reading = this.parseWeightValue(value);
-      this.onWeightCallback?.(reading);
+      this.weightListeners.forEach(cb => cb(reading));
     } catch (error) {
       console.error('Error parsing weight data:', error);
     }
@@ -306,21 +306,37 @@ export class BluetoothScaleManager {
       this.device.server = undefined;
       this.device.characteristic = undefined;
     }
-    this.onConnectionCallback?.(false);
+    this.connectionListeners.forEach(cb => cb(false));
   }
 
   /**
-   * Register callback for weight readings
+   * Register callback for weight readings (legacy — overwrites are safe now)
    */
   onWeight(callback: (reading: ScaleReading) => void): void {
-    this.onWeightCallback = callback;
+    this.weightListeners.add(callback);
   }
 
   /**
-   * Register callback for connection status changes
+   * Register callback for connection status changes (legacy)
    */
   onConnectionChange(callback: (connected: boolean) => void): void {
-    this.onConnectionCallback = callback;
+    this.connectionListeners.add(callback);
+  }
+
+  /**
+   * Add a weight listener. Returns an unsubscribe function.
+   */
+  addWeightListener(callback: (reading: ScaleReading) => void): () => void {
+    this.weightListeners.add(callback);
+    return () => { this.weightListeners.delete(callback); };
+  }
+
+  /**
+   * Add a connection listener. Returns an unsubscribe function.
+   */
+  addConnectionListener(callback: (connected: boolean) => void): () => void {
+    this.connectionListeners.add(callback);
+    return () => { this.connectionListeners.delete(callback); };
   }
 
   /**
