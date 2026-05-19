@@ -1,0 +1,7 @@
+# Never ship local env or SQLite files — production must use Turso.
+.env
+.env.*
+!.env.example
+*.db
+*.db-journal
+prisma/dev.db

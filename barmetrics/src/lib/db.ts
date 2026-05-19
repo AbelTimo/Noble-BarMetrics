@@ -10,7 +10,13 @@ const globalForPrisma = globalThis as unknown as {
 const LIBSQL_SCHEMES = ['libsql://', 'https://', 'http://', 'wss://', 'ws://'];
 
 function createPrismaClient() {
-  const url = process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL;
+  // Prefer Turso/libsql whenever it is configured so a stray file: DATABASE_URL
+  // (e.g. from a bundled .env that Next.js auto-loads) cannot hijack production
+  // onto a read-only SQLite file on the serverless filesystem.
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
+  const tursoIsLibsql =
+    !!tursoUrl && LIBSQL_SCHEMES.some((scheme) => tursoUrl.startsWith(scheme));
+  const url = tursoIsLibsql ? tursoUrl : process.env.DATABASE_URL ?? tursoUrl;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (url && LIBSQL_SCHEMES.some((scheme) => url.startsWith(scheme))) {
