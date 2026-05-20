@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { productCreateSchema } from '@/lib/validations';
+import { computeSearchKey } from '@/lib/calculations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -52,8 +53,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = productCreateSchema.parse(body);
 
+    // Server-derive the canonical natural key so duplicates are blocked at the DB.
+    const searchKey = computeSearchKey(
+      validated.brand,
+      validated.productName,
+      validated.nominalVolumeMl,
+    );
+
     const product = await prisma.product.create({
-      data: validated,
+      data: { ...validated, searchKey },
     });
 
     return NextResponse.json(product, { status: 201 });
@@ -63,6 +71,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Validation error', details: error },
         { status: 400 }
+      );
+    }
+    // Prisma surfaces unique-constraint violations as P2002.
+    const msg = error instanceof Error ? error.message : '';
+    if (msg.includes('P2002') || msg.toLowerCase().includes('unique constraint')) {
+      const onUpc = msg.includes('upc');
+      return NextResponse.json(
+        {
+          error: onUpc
+            ? 'A product with that UPC already exists.'
+            : 'A product with the same brand, name, and size already exists.',
+        },
+        { status: 409 },
       );
     }
     return NextResponse.json(

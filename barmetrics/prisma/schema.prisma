@@ -11,11 +11,22 @@ model Product {
   id              String   @id @default(cuid())
   brand           String
   productName     String
+  // Top-level TTB class (VODKA, WHISKEY, BRANDY, ...). See docs/PRODUCT-NAMING-STANDARD.md.
   category        String
+  // Optional sub-classification (BOURBON, SCOTCH_SINGLE_MALT, COGNAC, BLANCO, ...).
+  subClass        String?
   abvPercent      Float
   nominalVolumeMl Int
   defaultDensity  Float    @default(0.95)
   defaultTareG    Float?
+  // Age statement in whole years (whisky/brandy/etc.). Nullable when N/A or unknown.
+  ageStatement    Int?
+  // GS1 GTIN-12/13. Globally unique product identifier.
+  upc             String?  @unique
+  // Normalized natural key (NFKD-folded brand+productName+sizeMl, lowercase, alphanumeric).
+  // Server-derived on write — UNIQUE makes duplicates impossible.
+  // Nullable so legacy rows can be backfilled in two steps without a NOT NULL violation.
+  searchKey       String?  @unique
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -128,7 +139,9 @@ model BottleWeightDatabase {
   id              String   @id @default(cuid())
   brand           String
   productName     String
-  category        String   // VODKA, WHISKEY, etc.
+  category        String   // VODKA, WHISKEY, etc. (TTB top-level class)
+  subClass        String?  // BOURBON, SCOTCH_SINGLE_MALT, COGNAC, BLANCO, ...
+  ageStatement    Int?     // Age in whole years where applicable
   sizeMl          Int      // 750, 1000, etc.
   bottleType      String?  // "Standard Glass", "Heavy Bottom", "Ceramic", etc.
   tareWeightG     Float    // Empty bottle weight

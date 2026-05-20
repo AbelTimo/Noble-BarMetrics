@@ -219,9 +219,122 @@ export const LIQUOR_CATEGORIES = [
 export type LiquorCategory = typeof LIQUOR_CATEGORIES[number];
 
 /**
- * Common bottle sizes in ml
+ * TTB Standards of Fill — authorized US bottle sizes for distilled spirits.
+ * 27 CFR Part 5, Subpart K. New imports/forms should restrict to this set.
  */
-export const BOTTLE_SIZES = [50, 100, 200, 375, 500, 700, 750, 1000, 1750] as const;
+export const STANDARD_BOTTLE_SIZES = [
+  50, 100, 187, 200, 250, 350, 375, 500, 700, 720, 750, 1000, 1500, 1750, 3000,
+] as const;
+export type StandardBottleSize = typeof STANDARD_BOTTLE_SIZES[number];
+
+/**
+ * Backward-compatible alias used by older imports. Prefer STANDARD_BOTTLE_SIZES.
+ */
+export const BOTTLE_SIZES = STANDARD_BOTTLE_SIZES;
+
+/**
+ * TTB top-level distilled-spirits classes (the broad "what is it" bucket).
+ * Sub-types like BOURBON/SCOTCH/COGNAC live under LIQUOR_SUBCLASSES.
+ */
+export const LIQUOR_CLASSES = [
+  'VODKA',
+  'GIN',
+  'RUM',
+  'TEQUILA',
+  'MEZCAL',
+  'WHISKEY',
+  'BRANDY',
+  'LIQUEUR',
+  'BITTERS',
+  'VERMOUTH',
+  'OTHER',
+] as const;
+export type LiquorClass = typeof LIQUOR_CLASSES[number];
+
+/**
+ * Sub-classes per top-level class. Empty array = no sub-classification used.
+ */
+export const LIQUOR_SUBCLASSES: Record<LiquorClass, readonly string[]> = {
+  VODKA:    [],
+  GIN:      ['LONDON_DRY', 'PLYMOUTH', 'OLD_TOM', 'GENEVER', 'CONTEMPORARY'],
+  RUM:      ['WHITE', 'GOLD', 'DARK', 'SPICED', 'OVERPROOF', 'AGED'],
+  TEQUILA:  ['BLANCO', 'REPOSADO', 'ANEJO', 'EXTRA_ANEJO', 'CRISTALINO'],
+  MEZCAL:   ['JOVEN', 'REPOSADO', 'ANEJO'],
+  WHISKEY:  ['BOURBON', 'RYE', 'TENNESSEE', 'SCOTCH_SINGLE_MALT', 'SCOTCH_BLENDED', 'IRISH', 'CANADIAN', 'JAPANESE', 'AMERICAN'],
+  BRANDY:   ['COGNAC', 'ARMAGNAC', 'CALVADOS', 'PISCO', 'AMERICAN'],
+  LIQUEUR:  ['CREAM', 'COFFEE', 'HERBAL', 'FRUIT', 'NUT', 'CHOCOLATE', 'TRIPLE_SEC', 'AMARO'],
+  BITTERS:  [],
+  VERMOUTH: ['DRY', 'SWEET', 'BLANC'],
+  OTHER:    [],
+} as const;
+
+/**
+ * NFKD-fold a string and reduce to lowercase alphanumeric only.
+ * Stable across accents/whitespace/punctuation — safe for dedup keys.
+ */
+export function normalizeForKey(s: string): string {
+  return s
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * Canonical search key: NFKD(brand + productName) + sizeMl.
+ * Used as the UNIQUE natural key on Product to prevent duplicate spirits.
+ */
+export function computeSearchKey(brand: string, productName: string, sizeMl: number): string {
+  return `${normalizeForKey(brand)}-${normalizeForKey(productName)}-${sizeMl}`;
+}
+
+/**
+ * Normalize free-text brand/productName: trim, fold smart quotes, collapse whitespace.
+ * Diacritics are preserved for display (only stripped inside searchKey).
+ */
+export function normalizeSpiritName(s: string): string {
+  return s
+    .replace(/[‘’‚‛]/g, "'") // smart quotes -> ASCII apostrophe
+    .replace(/[“”„‟]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Derive an age statement in whole years from a productName string.
+ * Returns null if no obvious age is implied.
+ * Heuristics: explicit "12 Year" / "12yr", and well-known cognac grades.
+ */
+export function deriveAgeStatement(productName: string): number | null {
+  const m = productName.match(/(\d+)\s*(?:yr|year|yo|y\.o\.)\b/i);
+  if (m) return parseInt(m[1], 10);
+  const n = productName.match(/\b(\d{1,2})\s*y(ear)?s?\b/i);
+  if (n) return parseInt(n[1], 10);
+  // Cognac age grades (minimum cask years, per BNIC)
+  if (/\bVS\b/.test(productName)) return 2;
+  if (/\bVSOP\b/i.test(productName)) return 4;
+  if (/\bXO\b/i.test(productName)) return 10;
+  if (/\bNapole(o|ó)n\b/i.test(productName)) return 6;
+  return null;
+}
+
+/**
+ * Validate a GS1 GTIN-12 (UPC-A) or GTIN-13 (EAN-13) check digit.
+ * Returns true if the string is digits-only and the checksum matches.
+ */
+export function isValidGtin(raw: string): boolean {
+  const s = raw.replace(/\D/g, '');
+  if (s.length !== 12 && s.length !== 13) return false;
+  const digits = s.split('').map(Number);
+  const check = digits.pop()!;
+  // GS1 weights: alternate 3,1 from right-to-left of body.
+  let sum = 0;
+  for (let i = digits.length - 1, mul = 3; i >= 0; i--, mul = mul === 3 ? 1 : 3) {
+    sum += digits[i] * mul;
+  }
+  const expected = (10 - (sum % 10)) % 10;
+  return expected === check;
+}
 
 /**
  * Standard pour sizes in ml

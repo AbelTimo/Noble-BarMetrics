@@ -5,13 +5,32 @@
  * Run with: node scripts/seed-bottles.js
  */
 
+require('dotenv').config({ path: require('path').join(process.cwd(), '.env.local') });
+require('dotenv').config({ path: require('path').join(process.cwd(), '.env') });
 const { PrismaClient } = require('@prisma/client');
 const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
+const { PrismaLibSql } = require('@prisma/adapter-libsql');
 const path = require('path');
 
-const dbPath = path.join(process.cwd(), 'prisma', 'dev.db');
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
-const prisma = new PrismaClient({ adapter });
+const LIBSQL_SCHEMES = ['libsql://', 'https://', 'http://', 'wss://', 'ws://'];
+
+function createPrisma() {
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
+  const tursoIsLibsql =
+    !!tursoUrl && LIBSQL_SCHEMES.some((s) => tursoUrl.startsWith(s));
+  const url = tursoIsLibsql ? tursoUrl : (process.env.DATABASE_URL || `file:${path.join(process.cwd(), 'prisma', 'dev.db')}`);
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+
+  if (LIBSQL_SCHEMES.some((s) => url.startsWith(s))) {
+    console.log(`→ Connecting via libsql/Turso (${url.slice(0, url.indexOf('://') + 12)}…)`);
+    return new PrismaClient({ adapter: new PrismaLibSql({ url, authToken }) });
+  }
+  const filePath = url.startsWith('file:') ? path.resolve(process.cwd(), url.slice('file:'.length)) : url;
+  console.log(`→ Connecting via better-sqlite3 (${filePath})`);
+  return new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: filePath }) });
+}
+
+const prisma = createPrisma();
 
 // Calculate full weight from tare and ABV
 function calculateFullWeight(tareG, sizeMl, abvPercent) {

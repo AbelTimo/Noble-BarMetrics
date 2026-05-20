@@ -1,18 +1,37 @@
 import { z } from 'zod';
-import { LIQUOR_CATEGORIES, BOTTLE_SIZES } from './calculations';
+import {
+  LIQUOR_CATEGORIES,
+  BOTTLE_SIZES,
+  STANDARD_BOTTLE_SIZES,
+  normalizeSpiritName,
+  isValidGtin,
+} from './calculations';
 
-// Product validation schemas
+// Product validation schemas.
+// Naming/dedup rules are documented in docs/PRODUCT-NAMING-STANDARD.md.
 export const productSchema = z.object({
-  brand: z.string().min(1, 'Brand is required').max(100, 'Brand must be 100 characters or less'),
-  productName: z.string().min(1, 'Product name is required').max(100, 'Product name must be 100 characters or less'),
+  brand: z.string()
+    .min(1, 'Brand is required')
+    .max(100, 'Brand must be 100 characters or less')
+    .transform(normalizeSpiritName),
+  productName: z.string()
+    .min(1, 'Product name is required')
+    .max(100, 'Product name must be 100 characters or less')
+    .transform(normalizeSpiritName),
+  // category = TTB top-level class. Backward-compatible with legacy values
+  // (BOURBON/SCOTCH/COGNAC are tolerated for read; new entries should use the
+  // class+subClass pair, with the form deriving category accordingly).
   category: z.enum(LIQUOR_CATEGORIES, { message: 'Please select a valid category' }),
+  subClass: z.string().max(40).optional().nullable(),
   abvPercent: z.number()
     .min(0, 'ABV must be at least 0%')
-    .max(100, 'ABV cannot exceed 100%'),
+    .max(95, 'ABV cannot exceed 95%'),
   nominalVolumeMl: z.number()
     .int('Volume must be a whole number')
-    .min(1, 'Volume must be at least 1ml')
-    .max(5000, 'Volume cannot exceed 5000ml'),
+    .refine(
+      (v) => (STANDARD_BOTTLE_SIZES as readonly number[]).includes(v),
+      'Size must be a TTB Standard of Fill (e.g. 50, 100, 187, 200, 250, 350, 375, 500, 700, 720, 750, 1000, 1500, 1750, 3000 ml)',
+    ),
   defaultDensity: z.number()
     .min(0.7, 'Density must be at least 0.7 g/ml')
     .max(1.1, 'Density cannot exceed 1.1 g/ml')
@@ -20,6 +39,13 @@ export const productSchema = z.object({
   defaultTareG: z.number()
     .min(0, 'Tare weight cannot be negative')
     .max(2000, 'Tare weight seems too high')
+    .nullable()
+    .optional(),
+  ageStatement: z.number().int().min(0).max(120).nullable().optional(),
+  upc: z.string()
+    .transform((v) => v.replace(/\D/g, ''))
+    .refine((v) => v === '' || isValidGtin(v), 'Invalid GTIN/UPC check digit')
+    .transform((v) => (v === '' ? null : v))
     .nullable()
     .optional(),
   isActive: z.boolean().default(true),

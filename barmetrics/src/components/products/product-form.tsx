@@ -13,8 +13,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { productSchema, type ProductFormData } from '@/lib/validations';
-import { LIQUOR_CATEGORIES, BOTTLE_SIZES, suggestTareWeight } from '@/lib/calculations';
+import { LIQUOR_CATEGORIES, LIQUOR_SUBCLASSES, BOTTLE_SIZES, suggestTareWeight, type LiquorClass } from '@/lib/calculations';
 import { useEffect } from 'react';
+import { BottleDatabaseSearch } from '@/components/skus/bottle-database-search';
 
 interface ProductFormProps {
   defaultValues?: Partial<ProductFormData>;
@@ -59,8 +60,30 @@ export function ProductForm({
     }
   }, [nominalVolumeMl, setValue, defaultValues?.defaultTareG]);
 
+  const categoryWatch = watch('category');
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Bottle Database Search — auto-fill all fields from the 100+ catalog */}
+      <div className="rounded-lg border border-border bg-muted/40 p-4 space-y-2">
+        <Label>Quick fill from bottle catalog</Label>
+        <BottleDatabaseSearch
+          currentSize={nominalVolumeMl}
+          currentCategory={categoryWatch}
+          onSelect={(bottle) => {
+            setValue('brand', bottle.brand);
+            setValue('productName', bottle.productName);
+            setValue('category', bottle.category as typeof LIQUOR_CATEGORIES[number]);
+            setValue('nominalVolumeMl', bottle.sizeMl);
+            if (bottle.abvPercent != null) setValue('abvPercent', bottle.abvPercent);
+            if (bottle.tareWeightG != null) setValue('defaultTareG', bottle.tareWeightG);
+          }}
+        />
+        <p className="text-xs text-muted-foreground">
+          Search 100+ spirits (Tito&apos;s, Jameson, Patrón…) to auto-fill brand, name, ABV, and tare weight. You can still edit any field below.
+        </p>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="brand">Brand *</Label>
@@ -125,6 +148,63 @@ export function ProductForm({
         </div>
       </div>
 
+      {/* Sub-class dropdown (cascades from category) + Age statement */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="subClass">Sub-class</Label>
+          {(() => {
+            const subs = LIQUOR_SUBCLASSES[categoryWatch as LiquorClass] ?? [];
+            if (subs.length === 0) {
+              return (
+                <Input
+                  id="subClass"
+                  disabled
+                  placeholder="No sub-classes for this category"
+                  className="text-muted-foreground"
+                />
+              );
+            }
+            return (
+              <Select
+                value={watch('subClass') ?? ''}
+                onValueChange={(v) => setValue('subClass', v === '__none__' ? null : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Optional — pick a sub-type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— None —</SelectItem>
+                  {subs.map((s) => (
+                    <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            );
+          })()}
+          <p className="text-xs text-muted-foreground">
+            E.g. Whiskey → Bourbon, Tequila → Blanco, Cognac under Brandy.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="ageStatement">Age statement (years)</Label>
+          <Input
+            id="ageStatement"
+            type="number"
+            min={0}
+            max={120}
+            step={1}
+            {...register('ageStatement', {
+              setValueAs: (v) => (v === '' || v == null ? null : Number(v)),
+            })}
+            placeholder="e.g., 12 — leave blank if N/A"
+          />
+          {errors.ageStatement && (
+            <p className="text-sm text-destructive">{errors.ageStatement.message}</p>
+          )}
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="nominalVolumeMl">Bottle Size (ml) *</Label>
@@ -163,6 +243,22 @@ export function ProductForm({
             <p className="text-sm text-destructive">{errors.defaultTareG.message}</p>
           )}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="upc">UPC / GTIN <span className="text-muted-foreground">(optional)</span></Label>
+        <Input
+          id="upc"
+          inputMode="numeric"
+          {...register('upc')}
+          placeholder="12- or 13-digit barcode, leave blank if unknown"
+        />
+        {errors.upc && (
+          <p className="text-sm text-destructive">{errors.upc.message}</p>
+        )}
+        <p className="text-xs text-muted-foreground">
+          Globally unique product identifier (GS1 GTIN). The check digit is validated on save.
+        </p>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
