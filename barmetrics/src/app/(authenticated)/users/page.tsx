@@ -76,8 +76,8 @@ export default function UsersPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Please log in to view this page.</p>
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <p className="text-muted-foreground mb-4">Please log in to view this page.</p>
+          <Link href="/login" className="text-primary hover:underline">
             Go to Login
           </Link>
         </div>
@@ -88,7 +88,7 @@ export default function UsersPage() {
   if (!hasPermission(PERMISSIONS.USER_VIEW)) {
     return (
       <div className="container mx-auto p-6">
-        <div className="text-center text-red-600">
+        <div className="text-center text-destructive">
           You do not have permission to view users.
         </div>
       </div>
@@ -102,7 +102,7 @@ export default function UsersPage() {
         <RequirePermission permission={PERMISSIONS.USER_CREATE}>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary"
           >
             Add User
           </button>
@@ -115,12 +115,12 @@ export default function UsersPage() {
           placeholder="Search users..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
         >
           <option value="">All Roles</option>
           {ROLES.map((role) => (
@@ -132,7 +132,7 @@ export default function UsersPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
@@ -140,39 +140,39 @@ export default function UsersPage() {
       {isLoading ? (
         <div className="text-center py-8">Loading users...</div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-card rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Created
                 </th>
                 {(canUpdateUsers || canDeleteUsers) && (
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {users.map((user) => (
                 <tr key={user.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {user.displayName}
                         </div>
-                        <div className="text-sm text-gray-500">@{user.username}</div>
+                        <div className="text-sm text-muted-foreground">@{user.username}</div>
                       </div>
                     </div>
                   </td>
@@ -185,14 +185,14 @@ export default function UsersPage() {
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded ${
                         user.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-emerald-500/10 text-emerald-500'
+                          : 'bg-destructive/10 text-destructive'
                       }`}
                     >
                       {user.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   {(canUpdateUsers || canDeleteUsers) && (
@@ -200,7 +200,7 @@ export default function UsersPage() {
                       {canUpdateUsers && (
                         <button
                           onClick={() => setEditingUser(user)}
-                          className="text-blue-600 hover:text-blue-900 mr-3"
+                          className="text-primary hover:text-primary mr-3"
                         >
                           Edit
                         </button>
@@ -208,7 +208,7 @@ export default function UsersPage() {
                       {canDeleteUsers && (
                         <button
                           onClick={() => handleDeleteUser(user)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-destructive hover:text-destructive"
                         >
                           Delete
                         </button>
@@ -219,7 +219,7 @@ export default function UsersPage() {
               ))}
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-4 text-center text-muted-foreground">
                     No users found
                   </td>
                 </tr>
@@ -331,21 +331,21 @@ function UserModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+      <div className="bg-card rounded-lg shadow-xl max-w-md w-full p-6">
         <h2 className="text-xl font-bold mb-4">
           {isEditing ? 'Edit User' : 'Add New User'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+            <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded text-sm">
               {error}
             </div>
           )}
 
           {!isEditing && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Username
               </label>
               <input
@@ -353,17 +353,17 @@ function UserModal({
                 value={username}
                 onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                 required
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="john_doe"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Lowercase letters, numbers, and underscores only
               </p>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               Display Name
             </label>
             <input
@@ -371,19 +371,19 @@ function UserModal({
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="John Doe"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               Role
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {ROLES.map((r) => (
                 <option key={r} value={r}>
@@ -394,7 +394,7 @@ function UserModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               {isEditing ? 'New PIN (leave empty to keep current)' : 'PIN'}
             </label>
             <input
@@ -404,10 +404,10 @@ function UserModal({
               required={!isEditing}
               minLength={4}
               maxLength={10}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="****"
             />
-            <p className="mt-1 text-xs text-gray-500">4-10 characters</p>
+            <p className="mt-1 text-xs text-muted-foreground">4-10 characters</p>
           </div>
 
           {isEditing && (
@@ -417,9 +417,9 @@ function UserModal({
                 id="isActive"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-ring border-border rounded"
               />
-              <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="isActive" className="ml-2 block text-sm text-muted-foreground">
                 Account is active
               </label>
             </div>
@@ -429,14 +429,14 @@ function UserModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border rounded text-muted-foreground hover:bg-muted"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create User'}
             </button>

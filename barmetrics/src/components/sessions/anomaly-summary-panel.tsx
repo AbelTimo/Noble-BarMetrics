@@ -95,14 +95,14 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
   const hasIssues = summary.errorCount > 0 || summary.warningCount > 0;
 
   return (
-    <Card className={cn(className, hasIssues && 'border-amber-200')}>
+    <Card className={cn(className, hasIssues && 'border-amber-500/30')}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between text-base">
           <span className="flex items-center gap-2">
             {hasIssues ? (
               <AlertTriangle className="h-4 w-4 text-amber-500" />
             ) : (
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
             )}
             Anomaly Summary
           </span>
@@ -113,7 +113,7 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
               </Badge>
             )}
             {summary.warningCount > 0 && (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-xs">
+              <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 text-xs">
                 {summary.warningCount} Warning{summary.warningCount !== 1 ? 's' : ''}
               </Badge>
             )}
@@ -145,8 +145,8 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
                     className={cn(
                       'flex items-center gap-2 p-2 rounded-md text-sm',
                       info.severity === 'error'
-                        ? 'bg-red-50 text-red-800'
-                        : 'bg-amber-50 text-amber-800'
+                        ? 'bg-destructive/10 text-destructive'
+                        : 'bg-amber-500/10 text-amber-500'
                     )}
                   >
                     <Icon className="h-4 w-4 flex-shrink-0" />
@@ -158,8 +158,8 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
                       className={cn(
                         'text-xs',
                         info.severity === 'error'
-                          ? 'border-red-300 text-red-700'
-                          : 'border-amber-300 text-amber-700'
+                          ? 'border-red-300 text-destructive'
+                          : 'border-amber-300 text-amber-500'
                       )}
                     >
                       {count}
@@ -187,7 +187,7 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
                           <span
                             className={cn(
                               'text-xs',
-                              m.variancePercent > 0 ? 'text-amber-600' : 'text-red-600'
+                              m.variancePercent > 0 ? 'text-amber-500' : 'text-destructive'
                             )}
                           >
                             {m.variancePercent > 0 ? '+' : ''}{m.variancePercent.toFixed(1)}%
@@ -204,8 +204,8 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
                                 className={cn(
                                   'p-0.5 rounded',
                                   info.severity === 'error'
-                                    ? 'text-red-600 bg-red-100'
-                                    : 'text-amber-600 bg-amber-100'
+                                    ? 'text-destructive bg-destructive/10'
+                                    : 'text-amber-500 bg-amber-500/10'
                                 )}
                               >
                                 <Icon className="h-3 w-3" />
@@ -231,7 +231,7 @@ export function AnomalySummaryPanel({ sessionId, className }: AnomalySummaryPane
                   {data.missingProducts.map((p) => (
                     <div
                       key={p.productId}
-                      className="p-2 bg-amber-50 rounded text-sm text-amber-800"
+                      className="p-2 bg-amber-500/10 rounded text-sm text-amber-500"
                     >
                       {p.brand} {p.productName}
                     </div>

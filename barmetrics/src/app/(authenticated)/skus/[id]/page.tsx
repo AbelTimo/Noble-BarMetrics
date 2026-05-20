@@ -163,15 +163,15 @@ export default function SKUDetailPage({ params }: { params: Promise<{ id: string
           <CardContent>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-2xl font-bold text-yellow-600">{statusCounts.UNASSIGNED}</p>
+                <p className="text-2xl font-bold text-amber-500">{statusCounts.UNASSIGNED}</p>
                 <p className="text-sm text-muted-foreground">Unassigned</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-600">{statusCounts.ASSIGNED}</p>
+                <p className="text-2xl font-bold text-emerald-500">{statusCounts.ASSIGNED}</p>
                 <p className="text-sm text-muted-foreground">Assigned</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-600">{statusCounts.RETIRED}</p>
+                <p className="text-2xl font-bold text-muted-foreground">{statusCounts.RETIRED}</p>
                 <p className="text-sm text-muted-foreground">Retired</p>
               </div>
             </div>

@@ -22,9 +22,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`dark ${raleway.variable}`}>
       <body
-        className={`${raleway.variable} antialiased min-h-screen font-raleway`}
+        className="antialiased min-h-screen bg-background text-foreground font-sans"
       >
         <Providers>
           {children}

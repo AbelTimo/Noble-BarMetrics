@@ -69,22 +69,22 @@ export function SaleList() {
 
   const shiftColor = (shift: string | null) => {
     const colors: Record<string, string> = {
-      MORNING: 'bg-yellow-100 text-yellow-800',
-      AFTERNOON: 'bg-orange-100 text-orange-800',
-      EVENING: 'bg-blue-100 text-blue-800',
-      NIGHT: 'bg-purple-100 text-purple-800',
+      MORNING: 'bg-amber-500/10 text-amber-500',
+      AFTERNOON: 'bg-amber-500/10 text-amber-500',
+      EVENING: 'bg-primary/10 text-primary',
+      NIGHT: 'bg-primary/10 text-primary',
     };
-    return colors[shift || ''] || 'bg-gray-100 text-gray-800';
+    return colors[shift || ''] || 'bg-muted text-foreground';
   };
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-[#3E3226]">Sales</h1>
-          <p className="text-sm text-[#3E3226]/60 mt-1">Record sales for variance calculation</p>
+          <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-foreground">Sales</h1>
+          <p className="text-sm text-muted-foreground mt-1">Record sales for variance calculation</p>
         </div>
-        <Button asChild className="bg-[#3E3226] hover:bg-[#3E3226]/90 text-[#F5F0E8]">
+        <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <Link href="/sales/new">
             <Plus className="h-4 w-4 mr-2" />
             Record Sale
@@ -97,12 +97,12 @@ export function SaleList() {
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
-          className="px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+          className="px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
         />
         <select
           value={shiftFilter}
           onChange={(e) => setShiftFilter(e.target.value)}
-          className="px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+          className="px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
         >
           <option value="">All Shifts</option>
           {SALE_SHIFTS.map((s) => (
@@ -112,13 +112,13 @@ export function SaleList() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-[#3E3226]/50">Loading sales...</div>
+        <div className="text-center py-12 text-muted-foreground">Loading sales...</div>
       ) : sales.length === 0 ? (
-        <Card className="p-12 text-center bg-white/30 border-[#3E3226]/10">
-          <DollarSign className="h-12 w-12 mx-auto mb-4 text-[#3E3226]/30" />
-          <h3 className="text-lg font-semibold text-[#3E3226]/70 mb-2">No sales recorded</h3>
-          <p className="text-sm text-[#3E3226]/50 mb-4">Record sales data to calculate variance</p>
-          <Button asChild className="bg-[#3E3226] hover:bg-[#3E3226]/90 text-[#F5F0E8]">
+        <Card className="p-12 text-center bg-card/30 border-border">
+          <DollarSign className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg font-semibold text-muted-foreground mb-2">No sales recorded</h3>
+          <p className="text-sm text-muted-foreground mb-4">Record sales data to calculate variance</p>
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <Link href="/sales/new">
               <Plus className="h-4 w-4 mr-2" />
               Record First Sale
@@ -128,12 +128,12 @@ export function SaleList() {
       ) : (
         <div className="space-y-3">
           {sales.map((sale) => (
-            <Card key={sale.id} className="p-4 bg-white/40 border-[#3E3226]/10 hover:border-[#3E3226]/20 transition-all">
+            <Card key={sale.id} className="p-4 bg-card/40 border-border hover:border-border transition-all">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#3E3226]">
+                      <span className="font-bold text-foreground">
                         {new Date(sale.date).toLocaleDateString()}
                       </span>
                       {sale.shift && (
@@ -141,11 +141,11 @@ export function SaleList() {
                           {sale.shift}
                         </Badge>
                       )}
-                      <Badge variant="outline" className="text-[10px] border-[#3E3226]/20 text-[#3E3226]/50">
+                      <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                         {sale.source}
                       </Badge>
                     </div>
-                    <div className="text-sm text-[#3E3226]/60 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {sale.items.map((item) => (
                         <span key={item.id} className="mr-3">
                           {item.quantity}x {item.recipe?.name || (item.product ? `${item.product.brand} ${item.product.productName}` : item.type)}
@@ -155,10 +155,10 @@ export function SaleList() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-[#3E3226]">{totalItems(sale.items)} items</span>
+                  <span className="font-mono font-bold text-foreground">{totalItems(sale.items)} items</span>
                   <button
                     onClick={() => handleDelete(sale.id)}
-                    className="p-1.5 text-[#3E3226]/30 hover:text-red-600 transition-colors"
+                    className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

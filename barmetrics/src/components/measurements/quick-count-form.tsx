@@ -297,7 +297,7 @@ export function QuickCountForm({
     return (
       <Card>
         <CardContent className="py-8">
-          <p className="text-center text-red-600">{error}</p>
+          <p className="text-center text-destructive">{error}</p>
         </CardContent>
       </Card>
     );
@@ -337,7 +337,7 @@ export function QuickCountForm({
           <Progress value={progressPercent} className="h-2" />
         </div>
         {error && (
-          <p className="text-sm text-red-600 mt-2">{error}</p>
+          <p className="text-sm text-destructive mt-2">{error}</p>
         )}
       </CardHeader>
       <CardContent>
@@ -363,7 +363,7 @@ export function QuickCountForm({
                 key={entry.productId}
                 className={cn(
                   'grid grid-cols-12 gap-2 px-2 py-2 items-center rounded-md transition-colors',
-                  entry.isSaved && 'bg-green-50',
+                  entry.isSaved && 'bg-emerald-500/10',
                   entry.isSkipped && 'bg-muted/50 opacity-60',
                   !entry.isSaved && !entry.isSkipped && 'hover:bg-muted/30'
                 )}
@@ -448,7 +448,7 @@ export function QuickCountForm({
                 {/* Status */}
                 <div className="col-span-1 flex justify-center">
                   {entry.isSaved ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-emerald-500" />
                   ) : entry.anomalies.length > 0 ? (
                     <AnomalyBadge
                       anomalyFlags={JSON.stringify(entry.anomalies)}
@@ -456,7 +456,7 @@ export function QuickCountForm({
                       size="sm"
                     />
                   ) : entry.grossWeight || entry.isSkipped ? (
-                    <Circle className="h-5 w-5 text-blue-400" />
+                    <Circle className="h-5 w-5 text-primary" />
                   ) : (
                     <Circle className="h-5 w-5 text-muted-foreground/30" />
                   )}

@@ -71,19 +71,19 @@ export function SKUList() {
 
   const getCategoryColor = (cat: string) => {
     const colors: Record<string, string> = {
-      VODKA: 'bg-blue-100 text-blue-800',
+      VODKA: 'bg-primary/10 text-primary',
       GIN: 'bg-cyan-100 text-cyan-800',
-      WHISKEY: 'bg-amber-100 text-amber-800',
-      BOURBON: 'bg-orange-100 text-orange-800',
-      RUM: 'bg-yellow-100 text-yellow-800',
+      WHISKEY: 'bg-amber-500/10 text-amber-500',
+      BOURBON: 'bg-amber-500/10 text-amber-500',
+      RUM: 'bg-amber-500/10 text-amber-500',
       TEQUILA: 'bg-lime-100 text-lime-800',
-      BRANDY: 'bg-purple-100 text-purple-800',
+      BRANDY: 'bg-primary/10 text-primary',
       LIQUEUR: 'bg-pink-100 text-pink-800',
-      MEZCAL: 'bg-green-100 text-green-800',
+      MEZCAL: 'bg-emerald-500/10 text-emerald-500',
       COGNAC: 'bg-rose-100 text-rose-800',
-      SCOTCH: 'bg-red-100 text-red-800',
+      SCOTCH: 'bg-destructive/10 text-destructive',
     };
-    return colors[cat] || 'bg-gray-100 text-gray-800';
+    return colors[cat] || 'bg-muted text-foreground';
   };
 
   return (

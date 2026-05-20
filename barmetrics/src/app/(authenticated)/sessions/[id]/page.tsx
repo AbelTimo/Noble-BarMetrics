@@ -225,13 +225,13 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">{session.name || 'Untitled Session'}</h1>
             {isQuickCount && (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+              <Badge variant="secondary" className="bg-amber-500/10 text-amber-500">
                 <Zap className="mr-1 h-3 w-3" />
                 Quick Count
               </Badge>
             )}
             {session.hasAnomalies && (
-              <Badge variant="destructive" className="bg-red-100 text-red-800">
+              <Badge variant="destructive" className="bg-destructive/10 text-destructive">
                 <AlertTriangle className="mr-1 h-3 w-3" />
                 Has Anomalies
               </Badge>
@@ -271,10 +271,10 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
                   />
                 )}
                 <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleChangeLocation}>
-                  <Check className="h-4 w-4 text-green-600" />
+                  <Check className="h-4 w-4 text-emerald-500" />
                 </Button>
                 <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEditingLocation}>
-                  <X className="h-4 w-4 text-red-600" />
+                  <X className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
             ) : (
@@ -388,7 +388,7 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
                           key={measurement.id}
                           className={cn(
                             measurement.isSkipped && 'bg-muted/30 text-muted-foreground',
-                            measurement.anomalyFlags && 'bg-amber-50/50'
+                            measurement.anomalyFlags && 'bg-amber-500/10'
                           )}
                         >
                           <TableCell>
@@ -434,7 +434,7 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
                             ) : measurement.anomalyFlags ? (
                               <AnomalyBadge anomalyFlags={measurement.anomalyFlags} showAll />
                             ) : (
-                              <CheckCircle className="h-4 w-4 text-green-500 mx-auto" />
+                              <CheckCircle className="h-4 w-4 text-emerald-500 mx-auto" />
                             )}
                           </TableCell>
                           <TableCell className="text-right text-sm text-muted-foreground">

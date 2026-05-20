@@ -25,10 +25,10 @@ export function MeasurementResult({
 }: MeasurementResultProps) {
   const getStatusBadge = (percent: number | null) => {
     if (percent === null) return null;
-    if (percent >= 75) return <Badge className="bg-green-500">Full</Badge>;
-    if (percent >= 50) return <Badge className="bg-yellow-500">Half</Badge>;
-    if (percent >= 25) return <Badge className="bg-orange-500">Low</Badge>;
-    return <Badge className="bg-red-500">Critical</Badge>;
+    if (percent >= 75) return <Badge className="bg-emerald-500">Full</Badge>;
+    if (percent >= 50) return <Badge className="bg-amber-500">Half</Badge>;
+    if (percent >= 25) return <Badge className="bg-amber-500">Low</Badge>;
+    return <Badge className="bg-destructive">Critical</Badge>;
   };
 
   return (

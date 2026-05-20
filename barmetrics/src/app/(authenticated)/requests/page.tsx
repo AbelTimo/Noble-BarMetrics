@@ -147,22 +147,22 @@ export default function RequestsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+        return <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/30">
           <Clock className="mr-1 h-3 w-3" />
           Pending
         </Badge>;
       case 'APPROVED':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+        return <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30">
           <CheckCircle className="mr-1 h-3 w-3" />
           Approved
         </Badge>;
       case 'REJECTED':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+        return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">
           <XCircle className="mr-1 h-3 w-3" />
           Rejected
         </Badge>;
       case 'FULFILLED':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+        return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
           <CheckCircle className="mr-1 h-3 w-3" />
           Fulfilled
         </Badge>;
@@ -176,7 +176,7 @@ export default function RequestsPage() {
       case 'URGENT':
         return <Badge variant="destructive">Urgent</Badge>;
       case 'HIGH':
-        return <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">High</Badge>;
+        return <Badge variant="outline" className="bg-orange-50 text-amber-500 border-orange-200">High</Badge>;
       case 'NORMAL':
         return <Badge variant="secondary">Normal</Badge>;
       case 'LOW':
@@ -303,7 +303,7 @@ export default function RequestsPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleApprove(request.id)}
-                                className="text-green-600 border-green-200 hover:bg-green-50"
+                                className="text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10"
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
@@ -311,7 +311,7 @@ export default function RequestsPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleReject(request.id)}
-                                className="text-red-600 border-red-200 hover:bg-red-50"
+                                className="text-destructive border-destructive/30 hover:bg-destructive/10"
                               >
                                 <XCircle className="h-4 w-4" />
                               </Button>

@@ -15,7 +15,7 @@ export function BluetoothStatusIndicator() {
         variant="ghost"
         size="sm"
         onClick={disconnect}
-        className="gap-1.5 text-green-700 hover:text-red-600 hover:bg-red-50 px-2"
+        className="gap-1.5 px-2 text-emerald-500 hover:text-destructive"
         title={`Connected: ${device.name} — click to disconnect`}
       >
         <BluetoothConnected className="h-4 w-4" />
@@ -30,7 +30,7 @@ export function BluetoothStatusIndicator() {
       size="sm"
       onClick={connect}
       disabled={isConnecting}
-      className="gap-1.5 text-[#3E3226]/60 hover:text-[#3E3226] hover:bg-[#3E3226]/5 px-2"
+      className="gap-1.5 px-2 text-muted-foreground"
       title="Connect Bluetooth scale"
     >
       {isConnecting ? (

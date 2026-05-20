@@ -252,7 +252,7 @@ function WeighTrackPageContent() {
                 {isBluetoothConnected && scaleDevice ? (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
+                      <span className="flex items-center gap-1.5 text-sm text-emerald-500 font-medium">
                         <CheckCircle className="h-4 w-4" />
                         {scaleDevice.name}
                       </span>
@@ -261,9 +261,9 @@ function WeighTrackPageContent() {
                       </Button>
                     </div>
                     {lastReading && (
-                      <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4 text-center">
+                      <div className="bg-emerald-500/10 border-2 border-emerald-500 rounded-lg p-4 text-center">
                         <p className="text-sm text-muted-foreground mb-1">Current Weight</p>
-                        <p className="text-3xl font-bold text-green-700">
+                        <p className="text-3xl font-bold text-emerald-500">
                           {lastReading.weightG.toFixed(1)}g
                         </p>
                       </div>
@@ -405,7 +405,7 @@ function WeighTrackPageContent() {
                   placeholder={isBluetoothConnected ? 'Place bottle on scale...' : 'Enter weight...'}
                   className={cn(
                     'text-2xl font-mono text-center py-6',
-                    calculation && 'border-green-500 bg-green-50'
+                    calculation && 'border-emerald-500 bg-emerald-500/10'
                   )}
                   disabled={!selectedSKU || !selectedSKU.bottleTareG}
                 />
@@ -418,32 +418,32 @@ function WeighTrackPageContent() {
         <div className="space-y-4">
           {/* Calculation Results */}
           {calculation && (
-            <Card className="border-2 border-green-500">
+            <Card className="border-2 border-emerald-500">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-green-600" />
+                  <Activity className="h-5 w-5 text-emerald-500" />
                   Measurement Results
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <div className="flex items-center gap-2 text-blue-600 mb-1">
+                  <div className="bg-primary/10 p-4 rounded-lg">
+                    <div className="flex items-center gap-2 text-primary mb-1">
                       <Droplets className="h-4 w-4" />
                       <span className="text-sm font-medium">Volume</span>
                     </div>
-                    <p className="text-3xl font-bold text-blue-900">
+                    <p className="text-3xl font-bold text-primary">
                       {calculation.volumeMl.toFixed(0)}
                       <span className="text-lg">ml</span>
                     </p>
                   </div>
 
-                  <div className="bg-amber-50 p-4 rounded-lg">
-                    <div className="flex items-center gap-2 text-amber-600 mb-1">
+                  <div className="bg-amber-500/10 p-4 rounded-lg">
+                    <div className="flex items-center gap-2 text-amber-500 mb-1">
                       <TrendingUp className="h-4 w-4" />
                       <span className="text-sm font-medium">Fill Level</span>
                     </div>
-                    <p className="text-3xl font-bold text-amber-900">
+                    <p className="text-3xl font-bold text-amber-500">
                       {calculation.percentFull !== null ? calculation.percentFull.toFixed(1) : '0.0'}
                       <span className="text-lg">%</span>
                     </p>
@@ -475,9 +475,9 @@ function WeighTrackPageContent() {
 
                 {/* Visual Bottle Fill */}
                 <div className="pt-4">
-                  <div className="relative h-32 w-16 mx-auto border-2 border-gray-400 rounded-t-lg rounded-b-3xl overflow-hidden bg-gray-100">
+                  <div className="relative h-32 w-16 mx-auto border-2 border-border rounded-t-lg rounded-b-3xl overflow-hidden bg-muted">
                     <div
-                      className="absolute bottom-0 w-full bg-gradient-to-t from-blue-500 to-blue-300 transition-all duration-300"
+                      className="absolute bottom-0 w-full bg-gradient-to-t from-primary to-primary/60 transition-all duration-300"
                       style={{ height: `${calculation.percentFull !== null ? calculation.percentFull : 0}%` }}
                     />
                   </div>
@@ -527,9 +527,9 @@ function WeighTrackPageContent() {
 
           {/* Last Saved Confirmation */}
           {lastSaved && (
-            <Alert className="border-green-500 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
+            <Alert className="border-emerald-500 bg-emerald-500/10">
+              <CheckCircle className="h-4 w-4 text-emerald-500" />
+              <AlertDescription className="text-emerald-500">
                 <strong>Saved:</strong> {lastSaved}
               </AlertDescription>
             </Alert>

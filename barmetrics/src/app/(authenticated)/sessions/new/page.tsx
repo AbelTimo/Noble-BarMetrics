@@ -209,10 +209,10 @@ export default function NewSessionPage() {
 
             {/* Quick Count Source Session */}
             {mode === 'quick_count' && (
-              <div className="space-y-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="space-y-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/30">
                 <div className="flex items-center gap-2">
-                  <Copy className="h-4 w-4 text-amber-600" />
-                  <Label className="text-amber-800">Copy from Session</Label>
+                  <Copy className="h-4 w-4 text-amber-500" />
+                  <Label className="text-amber-500">Copy from Session</Label>
                 </div>
                 <Select value={sourceSessionId} onValueChange={setSourceSessionId}>
                   <SelectTrigger>
@@ -239,14 +239,14 @@ export default function NewSessionPage() {
                 </Select>
 
                 {templatePreview && (
-                  <div className="flex items-center gap-2 text-sm text-amber-700">
+                  <div className="flex items-center gap-2 text-sm text-amber-500">
                     <Calendar className="h-4 w-4" />
                     <span>{templatePreview.totalProducts} products will be loaded</span>
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="defaultPour" className="text-amber-800">
+                  <Label htmlFor="defaultPour" className="text-amber-500">
                     Standard Pour Size (ml)
                   </Label>
                   <Input
@@ -255,7 +255,7 @@ export default function NewSessionPage() {
                     value={defaultPourMl}
                     onChange={(e) => setDefaultPourMl(e.target.value)}
                     placeholder="30"
-                    className="bg-white"
+                    className="bg-card"
                   />
                 </div>
               </div>

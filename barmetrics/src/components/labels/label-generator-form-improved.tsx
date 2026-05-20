@@ -134,24 +134,24 @@ export function LabelGeneratorFormImproved({ preselectedSkuId }: LabelGeneratorF
   // Success state after generation
   if (generatedBatchId) {
     return (
-      <Card className="border-green-200 bg-green-50/50">
+      <Card className="border-emerald-500/30 bg-emerald-500/10">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
             </div>
             <div>
-              <CardTitle className="text-green-900">Labels Generated Successfully!</CardTitle>
-              <CardDescription className="text-green-700">
+              <CardTitle className="text-emerald-500">Labels Generated Successfully!</CardTitle>
+              <CardDescription className="text-emerald-500">
                 {generatedLabels.length} label{generatedLabels.length > 1 ? 's' : ''} created for {selectedSku?.name}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Alert className="border-blue-200 bg-blue-50">
-            <QrCode className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-900">
+          <Alert className="border-primary/30 bg-primary/10">
+            <QrCode className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-primary">
               Your labels are ready to print. You can print them now or access them later from the Labels page.
             </AlertDescription>
           </Alert>
@@ -159,7 +159,7 @@ export function LabelGeneratorFormImproved({ preselectedSkuId }: LabelGeneratorF
           {generatedLabels.length > 0 && (
             <div className="grid gap-2">
               <Label className="text-sm font-medium">Generated Label Codes:</Label>
-              <div className="flex flex-wrap gap-2 p-3 bg-white rounded-md border">
+              <div className="flex flex-wrap gap-2 p-3 bg-card rounded-md border">
                 {generatedLabels.slice(0, 10).map((label: any) => (
                   <Badge key={label.id} variant="secondary" className="font-mono">
                     {label.code}
@@ -230,7 +230,7 @@ export function LabelGeneratorFormImproved({ preselectedSkuId }: LabelGeneratorF
         {/* SKU Selection */}
         <div className="space-y-2">
           <Label htmlFor="sku">
-            SKU <span className="text-red-500">*</span>
+            SKU <span className="text-destructive">*</span>
           </Label>
           <Select
             value={selectedSkuId}
@@ -243,7 +243,7 @@ export function LabelGeneratorFormImproved({ preselectedSkuId }: LabelGeneratorF
             <SelectContent>
               {skus.length === 0 && !isFetchingSKUs && (
                 <div className="p-4 text-sm text-muted-foreground text-center">
-                  <AlertCircle className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                  <AlertCircle className="h-8 w-8 mx-auto mb-2 text-amber-500" />
                   <p>No active SKUs found.</p>
                   <Button
                     size="sm"
@@ -273,13 +273,13 @@ export function LabelGeneratorFormImproved({ preselectedSkuId }: LabelGeneratorF
 
         {/* Selected SKU Info */}
         {selectedSku && (
-          <Alert className="border-blue-200 bg-blue-50">
-            <Package className="h-4 w-4 text-blue-600" />
+          <Alert className="border-primary/30 bg-primary/10">
+            <Package className="h-4 w-4 text-primary" />
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-blue-900">{selectedSku.name}</div>
-                  <div className="text-sm text-blue-700">
+                  <div className="font-medium text-primary">{selectedSku.name}</div>
+                  <div className="text-sm text-primary">
                     Code: {selectedSku.code} • Size: {selectedSku.sizeMl}ml
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export function LabelGeneratorFormImproved({ preselectedSkuId }: LabelGeneratorF
         {/* Quantity Input */}
         <div className="space-y-2">
           <Label htmlFor="quantity">
-            Quantity <span className="text-red-500">*</span>
+            Quantity <span className="text-destructive">*</span>
           </Label>
           <Input
             id="quantity"

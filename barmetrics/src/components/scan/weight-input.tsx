@@ -168,7 +168,7 @@ export function WeightInput({
       {isSupported && (
         <div className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50">
           {isConnected && device ? (
-            <span className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
+            <span className="flex items-center gap-1.5 text-sm text-emerald-500 font-medium">
               <BluetoothConnected className="h-4 w-4" />
               {device.name} — auto-filling
             </span>
@@ -191,8 +191,8 @@ export function WeightInput({
       {/* Weight Input */}
       <div className="space-y-2">
         <Label htmlFor="weight" className="text-base font-medium">
-          Gross Weight (grams) <span className="text-red-500">*</span>
-          {isConnected && <span className="ml-2 text-xs text-green-600">(Auto-filled from scale)</span>}
+          Gross Weight (grams) <span className="text-destructive">*</span>
+          {isConnected && <span className="ml-2 text-xs text-emerald-500">(Auto-filled from scale)</span>}
         </Label>
         <Input
           id="weight"
@@ -205,12 +205,12 @@ export function WeightInput({
           onKeyPress={handleKeyPress}
           className={`text-2xl font-bold h-16 text-center ${
             hasError
-              ? 'border-red-500 border-2 focus-visible:ring-red-500 bg-red-50'
+              ? 'border-destructive border-2 focus-visible:ring-red-500 bg-destructive/10'
               : ''
           }`}
           disabled={isSaving}
         />
-        <p className={`text-xs text-center ${hasError ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
+        <p className={`text-xs text-center ${hasError ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
           {hasError
             ? `Must be at least ${bottleTareG}g (empty bottle weight)`
             : 'Place bottle on scale and enter the weight shown'
@@ -222,9 +222,9 @@ export function WeightInput({
       {calculation && (
         <div className="space-y-3">
           {calculation.errors.length > 0 && (
-            <Alert variant="destructive" className="border-2 border-red-500 bg-red-50 animate-pulse">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-              <AlertDescription className="text-red-900 font-semibold">
+            <Alert variant="destructive" className="border-2 border-destructive bg-destructive/10 animate-pulse">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <AlertDescription className="text-destructive font-semibold">
                 {calculation.errors.map((err, i) => (
                   <p key={i}>{err}</p>
                 ))}
@@ -244,8 +244,8 @@ export function WeightInput({
           )}
 
           {calculation.isValid && (
-            <div className="bg-green-500/10 border-2 border-green-500 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-3 text-green-700 dark:text-green-400">
+            <div className="bg-emerald-500/10 border-2 border-emerald-500 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-3 text-emerald-500 dark:text-emerald-400">
                 <CheckCircle2 className="h-5 w-5" />
                 <span className="font-semibold">Calculated Results</span>
               </div>

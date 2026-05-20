@@ -156,11 +156,11 @@ export function getRoleDescription(role: Role): string {
  */
 export function getRoleBadgeColor(role: Role): string {
   const colors: Record<Role, string> = {
-    BARTENDER: 'bg-blue-100 text-blue-800',
-    STOREKEEPER: 'bg-green-100 text-green-800',
-    MANAGER: 'bg-purple-100 text-purple-800',
+    BARTENDER: 'bg-primary/10 text-primary',
+    STOREKEEPER: 'bg-emerald-500/10 text-emerald-500',
+    MANAGER: 'bg-primary/10 text-primary',
   };
-  return colors[role] || 'bg-gray-100 text-gray-800';
+  return colors[role] || 'bg-muted text-foreground';
 }
 
 /**

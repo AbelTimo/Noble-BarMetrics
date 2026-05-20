@@ -63,7 +63,7 @@ export function BluetoothScaleConnect({
 
             {isConnected && device ? (
               <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 text-sm text-green-600">
+                <span className="flex items-center gap-1 text-sm text-emerald-500">
                   <BluetoothConnected className="h-4 w-4" />
                   {device.name}
                 </span>
@@ -99,9 +99,9 @@ export function BluetoothScaleConnect({
 
           {/* Current Weight Display */}
           {isConnected && lastReading && (
-            <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4 text-center">
+            <div className="bg-emerald-500/10 border-2 border-emerald-500 rounded-lg p-4 text-center">
               <p className="text-sm text-muted-foreground mb-1">Current Weight</p>
-              <p className="text-3xl font-bold text-green-700">
+              <p className="text-3xl font-bold text-emerald-500">
                 {lastReading.weightG.toFixed(1)}g
               </p>
             </div>

@@ -170,7 +170,7 @@ export function SKUProductLinker({ skuId, linkedProducts, onUpdate }: SKUProduct
                   <TableCell className="text-right">{link.product.nominalVolumeMl}ml</TableCell>
                   <TableCell>
                     {link.isPrimary && (
-                      <Badge className="bg-yellow-100 text-yellow-800">
+                      <Badge className="bg-amber-500/10 text-amber-500">
                         <Star className="h-3 w-3 mr-1" />
                         Primary
                       </Badge>

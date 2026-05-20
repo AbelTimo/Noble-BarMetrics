@@ -75,19 +75,19 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
 
       {/* Profile Info */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-card rounded-lg shadow p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Profile Information</h2>
         <div className="space-y-3">
           <div className="flex justify-between">
-            <span className="text-gray-600">Display Name</span>
+            <span className="text-muted-foreground">Display Name</span>
             <span className="font-medium">{user.displayName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Username</span>
+            <span className="text-muted-foreground">Username</span>
             <span className="font-medium">@{user.username}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Role</span>
+            <span className="text-muted-foreground">Role</span>
             <span className={`px-2 py-1 text-xs font-medium rounded ${getRoleBadgeColor(user.role)}`}>
               {getRoleDisplayName(user.role)}
             </span>
@@ -96,24 +96,24 @@ export default function SettingsPage() {
       </div>
 
       {/* Change PIN */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-card rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Change PIN</h2>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+          <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-4 py-3 rounded mb-4">
             {success}
           </div>
         )}
 
         <form onSubmit={handleChangePin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               Current PIN
             </label>
             <input
@@ -121,13 +121,13 @@ export default function SettingsPage() {
               value={currentPin}
               onChange={(e) => setCurrentPin(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Enter current PIN"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               New PIN
             </label>
             <input
@@ -137,13 +137,13 @@ export default function SettingsPage() {
               required
               minLength={4}
               maxLength={10}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Enter new PIN (4-10 characters)"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               Confirm New PIN
             </label>
             <input
@@ -153,7 +153,7 @@ export default function SettingsPage() {
               required
               minLength={4}
               maxLength={10}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Confirm new PIN"
             />
           </div>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary disabled:opacity-50"
           >
             {isSubmitting ? 'Changing PIN...' : 'Change PIN'}
           </button>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="mt-6 text-center">
-        <Link href="/" className="text-blue-600 hover:underline">
+        <Link href="/" className="text-primary hover:underline">
           Back to Home
         </Link>
       </div>

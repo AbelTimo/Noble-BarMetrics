@@ -307,8 +307,8 @@ export default function LabelDetailPage({ params }: { params: Promise<{ id: stri
       )}
 
       {label.replacesLabel && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-blue-800 font-medium">
+        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+          <div className="flex items-center gap-2 text-primary font-medium">
             <RefreshCw className="h-5 w-5" />
             This is a replacement label
           </div>
@@ -522,9 +522,9 @@ export default function LabelDetailPage({ params }: { params: Promise<{ id: stri
             <DialogTitle>Reprint Label</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-              <p className="font-medium text-blue-800">This will:</p>
-              <ul className="list-disc list-inside mt-1 text-blue-700">
+            <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm">
+              <p className="font-medium text-primary">This will:</p>
+              <ul className="list-disc list-inside mt-1 text-primary">
                 <li>Create a new replacement label with same SKU</li>
                 <li>Retire the current label ({label.code})</li>
                 <li>Link the new label to this one for audit trail</li>

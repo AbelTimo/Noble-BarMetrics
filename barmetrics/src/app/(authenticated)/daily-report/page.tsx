@@ -121,16 +121,16 @@ export default function DailyReportPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-[#3E3226]">Daily Report</h1>
-          <p className="text-sm text-[#3E3226]/60 mt-1">Generate shareable daily inventory reports</p>
+          <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-foreground">Daily Report</h1>
+          <p className="text-sm text-muted-foreground mt-1">Generate shareable daily inventory reports</p>
         </div>
         {report && (
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handlePrint} className="border-[#3E3226]/20 text-[#3E3226]/70">
+            <Button variant="outline" size="sm" onClick={handlePrint} className="border-border text-muted-foreground">
               <Printer className="h-4 w-4 mr-1" />
               Print
             </Button>
-            <Button variant="outline" size="sm" onClick={handleShare} className="border-[#3E3226]/20 text-[#3E3226]/70">
+            <Button variant="outline" size="sm" onClick={handleShare} className="border-border text-muted-foreground">
               <Share2 className="h-4 w-4 mr-1" />
               Share
             </Button>
@@ -139,9 +139,9 @@ export default function DailyReportPage() {
       </div>
 
       {/* Date Picker & Generate */}
-      <Card className="p-4 bg-white/40 border-[#3E3226]/10 mb-6 flex flex-col sm:flex-row items-end gap-4">
+      <Card className="p-4 bg-card/40 border-border mb-6 flex flex-col sm:flex-row items-end gap-4">
         <div className="flex-1">
-          <label className="text-xs text-[#3E3226]/70 font-medium block mb-1">
+          <label className="text-xs text-muted-foreground font-medium block mb-1">
             <Calendar className="h-3 w-3 inline mr-1" />
             Report Date
           </label>
@@ -149,10 +149,10 @@ export default function DailyReportPage() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+            className="w-full px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
           />
         </div>
-        <Button onClick={generateReport} disabled={loading} className="bg-[#3E3226] hover:bg-[#3E3226]/90 text-[#F5F0E8]">
+        <Button onClick={generateReport} disabled={loading} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
           Generate Report
         </Button>
@@ -160,54 +160,54 @@ export default function DailyReportPage() {
 
       {/* Report Content */}
       {report && (
-        <div ref={reportRef} className="print:bg-white print:text-black space-y-6">
+        <div ref={reportRef} className="print:bg-card print:text-black space-y-6">
           {/* Report Header */}
-          <Card className="p-6 bg-white/40 border-[#3E3226]/10 print:border print:border-gray-300">
+          <Card className="p-6 bg-card/40 border-border print:border print:border-border">
             <div className="text-center mb-4">
-              <h2 className="text-xl font-bold tracking-[0.2em] uppercase text-[#3E3226]">BarMetrics Daily Report</h2>
-              <p className="text-sm text-[#3E3226]/60 mt-1">
+              <h2 className="text-xl font-bold tracking-[0.2em] uppercase text-foreground">BarMetrics Daily Report</h2>
+              <p className="text-sm text-muted-foreground mt-1">
                 {new Date(report.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-3 rounded-lg bg-white/30 border border-[#3E3226]/5">
-                <div className="text-xs text-[#3E3226]/50 uppercase">Opening</div>
-                <div className="text-xl font-mono font-bold text-[#3E3226]">{report.stock.totalOpeningMl.toLocaleString()}</div>
-                <div className="text-xs text-[#3E3226]/50">ml</div>
+              <div className="text-center p-3 rounded-lg bg-card/30 border border-border">
+                <div className="text-xs text-muted-foreground uppercase">Opening</div>
+                <div className="text-xl font-mono font-bold text-foreground">{report.stock.totalOpeningMl.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">ml</div>
               </div>
-              <div className="text-center p-3 rounded-lg bg-white/30 border border-[#3E3226]/5">
-                <div className="text-xs text-[#3E3226]/50 uppercase">Closing</div>
-                <div className="text-xl font-mono font-bold text-[#3E3226]">{report.stock.totalClosingMl.toLocaleString()}</div>
-                <div className="text-xs text-[#3E3226]/50">ml</div>
+              <div className="text-center p-3 rounded-lg bg-card/30 border border-border">
+                <div className="text-xs text-muted-foreground uppercase">Closing</div>
+                <div className="text-xl font-mono font-bold text-foreground">{report.stock.totalClosingMl.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">ml</div>
               </div>
-              <div className="text-center p-3 rounded-lg bg-red-50/80 border border-red-200/50">
-                <div className="text-xs text-red-600/70 uppercase">Depletion</div>
-                <div className="text-xl font-mono font-bold text-red-700">{report.stock.totalDepletionMl.toLocaleString()}</div>
-                <div className="text-xs text-red-600/70">ml</div>
+              <div className="text-center p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                <div className="text-xs text-destructive/70 uppercase">Depletion</div>
+                <div className="text-xl font-mono font-bold text-destructive">{report.stock.totalDepletionMl.toLocaleString()}</div>
+                <div className="text-xs text-destructive/70">ml</div>
               </div>
             </div>
           </Card>
 
           {/* Sessions Info */}
-          <Card className="p-6 bg-white/40 border-[#3E3226]/10 print:border print:border-gray-300">
-            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#3E3226]/60 mb-3">Sessions ({report.sessions.total})</h3>
+          <Card className="p-6 bg-card/40 border-border print:border print:border-border">
+            <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-muted-foreground mb-3">Sessions ({report.sessions.total})</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {report.sessions.opening && (
-                <div className="p-3 rounded-lg bg-white/30 border border-[#3E3226]/5">
-                  <Badge className="bg-green-100 text-green-800 text-[10px] mb-1">OPENING</Badge>
-                  <div className="text-sm font-medium text-[#3E3226]">{report.sessions.opening.name || 'Session'}</div>
-                  <div className="text-xs text-[#3E3226]/50">
+                <div className="p-3 rounded-lg bg-card/30 border border-border">
+                  <Badge className="bg-emerald-500/10 text-emerald-500 text-[10px] mb-1">OPENING</Badge>
+                  <div className="text-sm font-medium text-foreground">{report.sessions.opening.name || 'Session'}</div>
+                  <div className="text-xs text-muted-foreground">
                     {new Date(report.sessions.opening.time).toLocaleTimeString()} - {report.sessions.opening.bottlesCounted} bottles
                   </div>
                 </div>
               )}
               {report.sessions.closing && (
-                <div className="p-3 rounded-lg bg-white/30 border border-[#3E3226]/5">
-                  <Badge className="bg-blue-100 text-blue-800 text-[10px] mb-1">CLOSING</Badge>
-                  <div className="text-sm font-medium text-[#3E3226]">{report.sessions.closing.name || 'Session'}</div>
-                  <div className="text-xs text-[#3E3226]/50">
+                <div className="p-3 rounded-lg bg-card/30 border border-border">
+                  <Badge className="bg-primary/10 text-primary text-[10px] mb-1">CLOSING</Badge>
+                  <div className="text-sm font-medium text-foreground">{report.sessions.closing.name || 'Session'}</div>
+                  <div className="text-xs text-muted-foreground">
                     {new Date(report.sessions.closing.time).toLocaleTimeString()} - {report.sessions.closing.bottlesCounted} bottles
                   </div>
                 </div>
@@ -217,28 +217,28 @@ export default function DailyReportPage() {
 
           {/* Stock Details */}
           {report.stock.products.length > 0 && (
-            <Card className="p-6 bg-white/40 border-[#3E3226]/10 print:border print:border-gray-300">
-              <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#3E3226]/60 mb-3">Stock Details</h3>
+            <Card className="p-6 bg-card/40 border-border print:border print:border-border">
+              <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-muted-foreground mb-3">Stock Details</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-[#3E3226]/10">
-                      <th className="text-left py-2 text-[#3E3226]/60 font-medium">Product</th>
-                      <th className="text-right py-2 text-[#3E3226]/60 font-medium">Opening</th>
-                      <th className="text-right py-2 text-[#3E3226]/60 font-medium">Closing</th>
-                      <th className="text-right py-2 text-[#3E3226]/60 font-medium">Depletion</th>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-2 text-muted-foreground font-medium">Product</th>
+                      <th className="text-right py-2 text-muted-foreground font-medium">Opening</th>
+                      <th className="text-right py-2 text-muted-foreground font-medium">Closing</th>
+                      <th className="text-right py-2 text-muted-foreground font-medium">Depletion</th>
                     </tr>
                   </thead>
                   <tbody>
                     {report.stock.products.map((p) => (
-                      <tr key={p.productId} className="border-b border-[#3E3226]/5">
+                      <tr key={p.productId} className="border-b border-border">
                         <td className="py-1.5">
-                          <span className="font-medium text-[#3E3226]">{p.brand}</span>{' '}
-                          <span className="text-[#3E3226]/60">{p.productName}</span>
+                          <span className="font-medium text-foreground">{p.brand}</span>{' '}
+                          <span className="text-muted-foreground">{p.productName}</span>
                         </td>
-                        <td className="py-1.5 text-right font-mono text-[#3E3226]/70">{p.openingMl} ml</td>
-                        <td className="py-1.5 text-right font-mono text-[#3E3226]/70">{p.closingMl} ml</td>
-                        <td className={`py-1.5 text-right font-mono font-bold ${p.depletionMl > 0 ? 'text-red-700' : 'text-green-700'}`}>
+                        <td className="py-1.5 text-right font-mono text-muted-foreground">{p.openingMl} ml</td>
+                        <td className="py-1.5 text-right font-mono text-muted-foreground">{p.closingMl} ml</td>
+                        <td className={`py-1.5 text-right font-mono font-bold ${p.depletionMl > 0 ? 'text-destructive' : 'text-emerald-500'}`}>
                           {p.depletionMl > 0 ? '-' : '+'}{Math.abs(p.depletionMl)} ml
                         </td>
                       </tr>
@@ -251,23 +251,23 @@ export default function DailyReportPage() {
 
           {/* Sales */}
           {report.sales.items.length > 0 && (
-            <Card className="p-6 bg-white/40 border-[#3E3226]/10 print:border print:border-gray-300">
-              <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#3E3226]/60 mb-3">
+            <Card className="p-6 bg-card/40 border-border print:border print:border-border">
+              <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-muted-foreground mb-3">
                 Sales ({report.sales.totalItems} items)
               </h3>
               <div className="space-y-1.5">
                 {report.sales.items.map((item, i) => (
-                  <div key={i} className="flex justify-between text-sm py-1 border-b border-[#3E3226]/5">
+                  <div key={i} className="flex justify-between text-sm py-1 border-b border-border">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-[10px] border-[#3E3226]/20 text-[#3E3226]/50">
+                      <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                         {item.type}
                       </Badge>
-                      <span className="text-[#3E3226]">{item.name}</span>
+                      <span className="text-foreground">{item.name}</span>
                       {item.shift && (
-                        <span className="text-[10px] text-[#3E3226]/40">({item.shift})</span>
+                        <span className="text-[10px] text-muted-foreground">({item.shift})</span>
                       )}
                     </div>
-                    <span className="font-mono font-bold text-[#3E3226]">x{item.quantity}</span>
+                    <span className="font-mono font-bold text-foreground">x{item.quantity}</span>
                   </div>
                 ))}
               </div>
@@ -276,10 +276,10 @@ export default function DailyReportPage() {
 
           {/* No Data */}
           {report.sessions.total === 0 && report.sales.items.length === 0 && (
-            <Card className="p-12 text-center bg-white/30 border-[#3E3226]/10">
-              <FileText className="h-12 w-12 mx-auto mb-4 text-[#3E3226]/30" />
-              <h3 className="text-lg font-semibold text-[#3E3226]/70 mb-2">No data for this date</h3>
-              <p className="text-sm text-[#3E3226]/50">No inventory sessions or sales were recorded on this date.</p>
+            <Card className="p-12 text-center bg-card/30 border-border">
+              <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold text-muted-foreground mb-2">No data for this date</h3>
+              <p className="text-sm text-muted-foreground">No inventory sessions or sales were recorded on this date.</p>
             </Card>
           )}
         </div>

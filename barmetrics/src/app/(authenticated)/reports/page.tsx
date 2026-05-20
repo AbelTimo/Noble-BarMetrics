@@ -87,11 +87,11 @@ export default function ReportsPage() {
   };
 
   const getStatusColor = (percent: number | null) => {
-    if (percent === null) return 'bg-gray-500';
-    if (percent >= 75) return 'bg-green-500';
-    if (percent >= 50) return 'bg-yellow-500';
-    if (percent >= 25) return 'bg-orange-500';
-    return 'bg-red-500';
+    if (percent === null) return 'bg-muted-foreground';
+    if (percent >= 75) return 'bg-emerald-500';
+    if (percent >= 50) return 'bg-amber-500';
+    if (percent >= 25) return 'bg-amber-500';
+    return 'bg-destructive';
   };
 
   return (
@@ -239,7 +239,7 @@ export default function ReportsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Low Stock Alert
                 </CardTitle>
                 <CardDescription>

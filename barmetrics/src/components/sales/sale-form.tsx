@@ -127,30 +127,30 @@ export function SaleForm() {
     <form onSubmit={handleSubmit}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Button type="button" variant="ghost" size="sm" onClick={() => router.push('/sales')} className="text-[#3E3226]/70">
+          <Button type="button" variant="ghost" size="sm" onClick={() => router.push('/sales')} className="text-muted-foreground">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-[#3E3226]">Record Sales</h1>
+          <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-foreground">Record Sales</h1>
         </div>
-        <Button type="submit" disabled={saving} className="bg-[#3E3226] hover:bg-[#3E3226]/90 text-[#F5F0E8]">
+        <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <Save className="h-4 w-4 mr-2" />
           {saving ? 'Saving...' : 'Save'}
         </Button>
       </div>
 
       {/* Sale Header */}
-      <Card className="p-6 bg-white/40 border-[#3E3226]/10 mb-6">
+      <Card className="p-6 bg-card/40 border-border mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <Label className="text-[#3E3226]/70">Date *</Label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className="bg-white/50 border-[#3E3226]/20" />
+            <Label className="text-muted-foreground">Date *</Label>
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className="bg-card/50 border-border" />
           </div>
           <div>
-            <Label className="text-[#3E3226]/70">Shift</Label>
+            <Label className="text-muted-foreground">Shift</Label>
             <select
               value={shift}
               onChange={(e) => setShift(e.target.value)}
-              className="w-full px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+              className="w-full px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
             >
               <option value="">Select shift</option>
               {SALE_SHIFTS.map((s) => (
@@ -159,17 +159,17 @@ export function SaleForm() {
             </select>
           </div>
           <div>
-            <Label className="text-[#3E3226]/70">Notes</Label>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional" className="bg-white/50 border-[#3E3226]/20" rows={1} />
+            <Label className="text-muted-foreground">Notes</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional" className="bg-card/50 border-border" rows={1} />
           </div>
         </div>
       </Card>
 
       {/* Sale Items */}
-      <Card className="p-6 bg-white/40 border-[#3E3226]/10">
+      <Card className="p-6 bg-card/40 border-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-[#3E3226]/60">Sale Items</h2>
-          <Button type="button" variant="outline" size="sm" onClick={addItem} className="border-[#3E3226]/20 text-[#3E3226]/70">
+          <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-muted-foreground">Sale Items</h2>
+          <Button type="button" variant="outline" size="sm" onClick={addItem} className="border-border text-muted-foreground">
             <Plus className="h-3 w-3 mr-1" />
             Add Item
           </Button>
@@ -177,13 +177,13 @@ export function SaleForm() {
 
         <div className="space-y-4">
           {items.map((item, index) => (
-            <div key={index} className="flex flex-col sm:flex-row gap-2 p-3 rounded-lg bg-white/30 border border-[#3E3226]/5">
+            <div key={index} className="flex flex-col sm:flex-row gap-2 p-3 rounded-lg bg-card/30 border border-border">
               <div className="w-full sm:w-32">
-                <Label className="text-[#3E3226]/70 text-xs">Type</Label>
+                <Label className="text-muted-foreground text-xs">Type</Label>
                 <select
                   value={item.type}
                   onChange={(e) => updateItem(index, 'type', e.target.value)}
-                  className="w-full px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+                  className="w-full px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
                 >
                   {SALE_ITEM_TYPES.map((t) => (
                     <option key={t} value={t}>{t}</option>
@@ -192,14 +192,14 @@ export function SaleForm() {
               </div>
 
               <div className="flex-1">
-                <Label className="text-[#3E3226]/70 text-xs">
+                <Label className="text-muted-foreground text-xs">
                   {needsRecipe(item.type) ? 'Recipe' : 'Product'}
                 </Label>
                 {needsRecipe(item.type) ? (
                   <select
                     value={item.recipeId}
                     onChange={(e) => updateItem(index, 'recipeId', e.target.value)}
-                    className="w-full px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+                    className="w-full px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
                   >
                     <option value="">Select recipe</option>
                     {recipes.map((r) => (
@@ -210,7 +210,7 @@ export function SaleForm() {
                   <select
                     value={item.productId}
                     onChange={(e) => updateItem(index, 'productId', e.target.value)}
-                    className="w-full px-3 py-2 rounded-md border border-[#3E3226]/20 bg-white/50 text-sm text-[#3E3226]"
+                    className="w-full px-3 py-2 rounded-md border border-border bg-card/50 text-sm text-foreground"
                   >
                     <option value="">Select product</option>
                     {products.map((p) => (
@@ -221,13 +221,13 @@ export function SaleForm() {
               </div>
 
               <div className="w-20">
-                <Label className="text-[#3E3226]/70 text-xs">Qty</Label>
+                <Label className="text-muted-foreground text-xs">Qty</Label>
                 <Input
                   type="number"
                   min="1"
                   value={item.quantity}
                   onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 1)}
-                  className="bg-white/50 border-[#3E3226]/20 font-mono"
+                  className="bg-card/50 border-border font-mono"
                 />
               </div>
 
@@ -238,7 +238,7 @@ export function SaleForm() {
                   size="sm"
                   onClick={() => removeItem(index)}
                   disabled={items.length <= 1}
-                  className="text-[#3E3226]/30 hover:text-red-600 px-2"
+                  className="text-muted-foreground hover:text-destructive px-2"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, X, PackagePlus, QrCode, Tags, MapPin, CookingPot, DollarSign, TrendingDown, FileText } from 'lucide-react';
+import { Wine, Package, Scale, ClipboardList, FileBarChart, Tag, Users, LogOut, LogIn, Settings, Menu, PackagePlus, QrCode, Tags, MapPin, CookingPot, DollarSign, TrendingDown, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
-import { PERMISSIONS, getRoleDisplayName, getRoleBadgeColor } from '@/lib/permissions';
+import { PERMISSIONS, getRoleDisplayName } from '@/lib/permissions';
 import { BluetoothStatusIndicator } from '@/components/bluetooth-status-indicator';
 import { useState, useEffect, useRef } from 'react';
 
@@ -40,21 +40,18 @@ export function NavHeader() {
     router.push('/login');
   };
 
-  // Filter nav items based on permissions
   const visibleNavItems = navItems.filter((item) => {
     if (!item.permission) return true;
     if (!isAuthenticated) return false;
     return hasPermission(item.permission);
   });
 
-  // Close menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowMenu(false);
       }
     }
-
     if (showMenu) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -62,41 +59,49 @@ export function NavHeader() {
   }, [showMenu]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#3E3226]/10 bg-[#D4C5B0]/95 backdrop-blur text-[#3E3226]">
-      <div className="container flex h-14 items-center justify-between">
-        <div className="flex items-center gap-2 sm:gap-3 relative">
-          <Link href="/dashboard" className="flex items-center space-x-2 hover:opacity-70 transition-opacity">
-            <Wine className="h-6 w-6 text-[#3E3226]/80" strokeWidth={1.5} />
-            <span className="hidden font-bold sm:inline-block tracking-[0.25em] uppercase text-[#3E3226]">BarMetrics</span>
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="relative flex items-center gap-1 sm:gap-2">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 transition-opacity hover:opacity-80"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Wine className="h-5 w-5" strokeWidth={1.75} />
+            </span>
+            <span className="hidden text-sm font-semibold tracking-tight sm:inline-block">
+              BarMetrics
+            </span>
           </Link>
 
-          {/* Hamburger Menu Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowMenu(!showMenu)}
-            className="gap-2 text-[#3E3226]/70 hover:text-[#3E3226] hover:bg-[#3E3226]/5 font-semibold"
+            className="ml-1 gap-2 text-muted-foreground"
           >
-            <Menu className="h-5 w-5" strokeWidth={1.5} />
-            <span className="text-xs tracking-[0.25em] uppercase">Menu</span>
+            <Menu className="h-4 w-4" strokeWidth={1.75} />
+            <span className="text-xs font-medium">Menu</span>
           </Button>
         </div>
 
-        <div className="flex items-center gap-4" suppressHydrationWarning>
+        <div className="flex items-center gap-2 sm:gap-3" suppressHydrationWarning>
           {isLoading ? (
-            <div className="text-sm text-[#3E3226]/50">Loading...</div>
+            <div className="text-sm text-muted-foreground">Loading…</div>
           ) : isAuthenticated && user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <BluetoothStatusIndicator />
-              <div className="hidden sm:flex items-center gap-2">
-                <span className="text-sm font-medium text-[#3E3226]">{user.displayName}</span>
-                <span className={cn('px-2 py-0.5 text-xs font-medium rounded', getRoleBadgeColor(user.role))}>
+              <div className="hidden items-center gap-2 sm:flex">
+                <span className="text-sm font-medium text-foreground">
+                  {user.displayName}
+                </span>
+                <span className="rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                   {getRoleDisplayName(user.role)}
                 </span>
               </div>
-              <Button asChild variant="ghost" size="sm" className="gap-2 text-[#3E3226]/70 hover:text-[#3E3226] hover:bg-[#3E3226]/5">
+              <Button asChild variant="ghost" size="sm" className="gap-2 text-muted-foreground">
                 <Link href="/settings">
-                  <Settings className="h-4 w-4" strokeWidth={1.5} />
+                  <Settings className="h-4 w-4" strokeWidth={1.75} />
                   <span className="hidden sm:inline">Settings</span>
                 </Link>
               </Button>
@@ -104,16 +109,16 @@ export function NavHeader() {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="gap-2 text-[#3E3226]/70 hover:text-[#3E3226] hover:bg-[#3E3226]/5"
+                className="gap-2 text-muted-foreground"
               >
-                <LogOut className="h-4 w-4" strokeWidth={1.5} />
+                <LogOut className="h-4 w-4" strokeWidth={1.75} />
                 <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           ) : (
-            <Button asChild variant="ghost" size="sm" className="gap-2 text-[#3E3226]/70 hover:text-[#3E3226] hover:bg-[#3E3226]/5">
+            <Button asChild variant="ghost" size="sm" className="gap-2 text-muted-foreground">
               <Link href="/login">
-                <LogIn className="h-4 w-4" strokeWidth={1.5} />
+                <LogIn className="h-4 w-4" strokeWidth={1.75} />
                 <span className="hidden sm:inline">Login</span>
               </Link>
             </Button>
@@ -121,20 +126,19 @@ export function NavHeader() {
         </div>
       </div>
 
-      {/* Dropdown Navigation Menu */}
       {showMenu && (
         <div
           ref={menuRef}
-          className="absolute left-0 top-full mt-2 w-64 bg-[#EAE0D5]/98 backdrop-blur-lg border border-[#3E3226]/20 rounded-lg shadow-2xl z-[110] overflow-hidden"
+          className="absolute left-4 top-full mt-2 w-64 overflow-hidden rounded-xl border border-border bg-popover shadow-2xl"
         >
-          <div className="p-3">
-            <h3 className="text-xs tracking-[0.35em] uppercase text-[#3E3226]/60 font-bold mb-3 px-3">
+          <div className="p-2">
+            <h3 className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Navigation
             </h3>
-
-            <nav className="space-y-1">
+            <nav className="space-y-0.5">
               {visibleNavItems.map((item) => {
-                const isActive = pathname === item.href ||
+                const isActive =
+                  pathname === item.href ||
                   (item.href !== '/' && pathname.startsWith(item.href));
                 return (
                   <Link
@@ -142,14 +146,14 @@ export function NavHeader() {
                     href={item.href}
                     onClick={() => setShowMenu(false)}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-300',
+                      'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
                       isActive
-                        ? 'bg-[#3E3226]/10 text-[#3E3226] font-bold'
-                        : 'text-[#3E3226]/70 hover:text-[#3E3226] hover:bg-[#3E3226]/5 font-semibold'
+                        ? 'bg-primary/10 font-medium text-primary'
+                        : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                     )}
                   >
-                    <item.icon className="h-4 w-4" strokeWidth={1.5} />
-                    <span className="text-sm tracking-[0.15em]">{item.label}</span>
+                    <item.icon className="h-4 w-4" strokeWidth={1.75} />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}

@@ -52,7 +52,7 @@ export function AnomalyBadge({
               className={cn(
                 'flex items-center gap-1',
                 size === 'sm' ? 'text-xs px-1.5 py-0' : 'text-sm px-2 py-0.5',
-                anomaly.severity === 'warning' && 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                anomaly.severity === 'warning' && 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20'
               )}
               title={`${anomaly.message}\n${anomaly.suggestion}`}
             >
@@ -75,7 +75,7 @@ export function AnomalyBadge({
       className={cn(
         'flex items-center gap-1',
         size === 'sm' ? 'text-xs px-1.5 py-0' : 'text-sm px-2 py-0.5',
-        severity === 'warning' && 'bg-amber-100 text-amber-800 hover:bg-amber-200',
+        severity === 'warning' && 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20',
         className
       )}
       title={anomalies.map(a => `${a.message}: ${a.suggestion}`).join('\n')}
@@ -117,8 +117,8 @@ export function AnomalyDetails({
             className={cn(
               'flex items-start gap-2 p-2 rounded-md text-sm',
               anomaly.severity === 'error'
-                ? 'bg-red-50 text-red-800'
-                : 'bg-amber-50 text-amber-800'
+                ? 'bg-destructive/10 text-destructive'
+                : 'bg-amber-500/10 text-amber-500'
             )}
           >
             <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -162,8 +162,8 @@ export function VarianceBadge({ variancePercent, size = 'sm', className }: Varia
         size === 'sm' ? 'text-xs' : 'text-sm',
         isSignificant
           ? isPositive
-            ? 'text-amber-600'
-            : 'text-red-600'
+            ? 'text-amber-500'
+            : 'text-destructive'
           : 'text-muted-foreground',
         className
       )}

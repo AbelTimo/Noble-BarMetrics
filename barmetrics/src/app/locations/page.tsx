@@ -175,8 +175,8 @@ export default function LocationsPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Please log in to view this page.</p>
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <p className="text-muted-foreground mb-4">Please log in to view this page.</p>
+          <Link href="/login" className="text-primary hover:underline">
             Go to Login
           </Link>
         </div>
@@ -187,7 +187,7 @@ export default function LocationsPage() {
   if (!hasPermission(PERMISSIONS.LOCATION_VIEW)) {
     return (
       <div className="container mx-auto p-6">
-        <div className="text-center text-red-600">
+        <div className="text-center text-destructive">
           You do not have permission to view locations.
         </div>
       </div>
@@ -204,7 +204,7 @@ export default function LocationsPage() {
         {canManageLocations && (
           <button
             onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary"
           >
             <Plus className="h-4 w-4" />
             Add Location
@@ -213,7 +213,7 @@ export default function LocationsPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4">
           {error}
           <button onClick={() => setError(null)} className="float-right">
             <X className="h-4 w-4" />
@@ -222,14 +222,14 @@ export default function LocationsPage() {
       )}
 
       {showCreateForm && (
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="bg-card rounded-lg shadow p-4 mb-6">
           <form onSubmit={handleCreate} className="flex gap-3">
             <input
               type="text"
               value={newLocationName}
               onChange={(e) => setNewLocationName(e.target.value)}
               placeholder="New location name"
-              className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
               autoFocus
             />
             <button
@@ -245,7 +245,7 @@ export default function LocationsPage() {
                 setShowCreateForm(false);
                 setNewLocationName('');
               }}
-              className="px-4 py-2 border rounded hover:bg-gray-50"
+              className="px-4 py-2 border rounded hover:bg-muted"
             >
               <X className="h-4 w-4" />
             </button>
@@ -256,32 +256,32 @@ export default function LocationsPage() {
       {isLoading ? (
         <div className="text-center py-8">Loading locations...</div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-card rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Location
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Labels
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
                 </th>
                 {canManageLocations && (
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {locations.map((location) => (
-                <tr key={location.id} className={!location.isActive ? 'bg-gray-50 opacity-60' : ''}>
+                <tr key={location.id} className={!location.isActive ? 'bg-muted opacity-60' : ''}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {editingId === location.id ? (
                       <div className="flex gap-2">
@@ -289,40 +289,40 @@ export default function LocationsPage() {
                           type="text"
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
-                          className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-ring"
                           autoFocus
                         />
                         <button
                           onClick={() => handleUpdate(location.id)}
                           disabled={isSubmitting || !editName.trim()}
-                          className="p-1 text-green-600 hover:text-green-800 disabled:opacity-50"
+                          className="p-1 text-emerald-500 hover:text-emerald-500 disabled:opacity-50"
                         >
                           <Check className="h-4 w-4" />
                         </button>
                         <button
                           onClick={cancelEditing}
-                          className="p-1 text-gray-600 hover:text-gray-800"
+                          className="p-1 text-muted-foreground hover:text-foreground"
                         >
                           <X className="h-4 w-4" />
                         </button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-gray-400" />
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{location.name}</span>
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {location._count?.labels ?? 0} labels
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {location.isDefault ? (
-                      <span className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800">
+                      <span className="px-2 py-1 text-xs font-medium rounded bg-primary/10 text-primary">
                         Default
                       </span>
                     ) : (
-                      <span className="px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">
+                      <span className="px-2 py-1 text-xs font-medium rounded bg-muted text-foreground">
                         Custom
                       </span>
                     )}
@@ -331,8 +331,8 @@ export default function LocationsPage() {
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded ${
                         location.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-emerald-500/10 text-emerald-500'
+                          : 'bg-destructive/10 text-destructive'
                       }`}
                     >
                       {location.isActive ? 'Active' : 'Inactive'}
@@ -344,7 +344,7 @@ export default function LocationsPage() {
                         {editingId !== location.id && (
                           <button
                             onClick={() => startEditing(location)}
-                            className="p-1 text-blue-600 hover:text-blue-800"
+                            className="p-1 text-primary hover:text-primary"
                             title="Rename"
                           >
                             <Pencil className="h-4 w-4" />
@@ -354,8 +354,8 @@ export default function LocationsPage() {
                           onClick={() => handleToggleActive(location)}
                           className={`p-1 ${
                             location.isActive
-                              ? 'text-orange-600 hover:text-orange-800'
-                              : 'text-green-600 hover:text-green-800'
+                              ? 'text-amber-500 hover:text-amber-500'
+                              : 'text-emerald-500 hover:text-emerald-500'
                           }`}
                           title={location.isActive ? 'Deactivate' : 'Reactivate'}
                         >
@@ -364,7 +364,7 @@ export default function LocationsPage() {
                         {!location.isDefault && (location._count?.labels ?? 0) === 0 && (
                           <button
                             onClick={() => handleDelete(location)}
-                            className="p-1 text-red-600 hover:text-red-800"
+                            className="p-1 text-destructive hover:text-destructive"
                             title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -377,7 +377,7 @@ export default function LocationsPage() {
               ))}
               {locations.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-4 text-center text-muted-foreground">
                     No locations found
                   </td>
                 </tr>
@@ -387,7 +387,7 @@ export default function LocationsPage() {
         </div>
       )}
 
-      <div className="mt-6 text-sm text-gray-500">
+      <div className="mt-6 text-sm text-muted-foreground">
         <p><strong>Note:</strong> Default locations cannot be deleted. Locations with assigned labels can only be deactivated, not deleted.</p>
       </div>
     </div>

@@ -275,7 +275,7 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
           </div>
         ) : (
           <div className="flex items-center gap-3 p-4 border rounded-lg bg-muted/30">
-            <FileSpreadsheet className="h-8 w-8 text-green-600" />
+            <FileSpreadsheet className="h-8 w-8 text-emerald-500" />
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{file.name}</p>
               <p className="text-sm text-muted-foreground">
@@ -303,11 +303,11 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
             <div className="flex items-center justify-between">
               <Label>Preview</Label>
               <div className="flex gap-2">
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30">
                   {validRows.length} valid
                 </Badge>
                 {invalidRows.length > 0 && (
-                  <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                  <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">
                     {invalidRows.length} with errors
                   </Badge>
                 )}
@@ -332,7 +332,7 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
                   {parsedData.slice(0, 50).map((row) => (
                     <TableRow
                       key={row.rowNumber}
-                      className={row.errors.length > 0 ? 'bg-red-50' : ''}
+                      className={row.errors.length > 0 ? 'bg-destructive/10' : ''}
                     >
                       <TableCell className="font-mono text-xs">
                         {row.rowNumber}
@@ -340,7 +340,7 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
                       <TableCell>{row.brand || '-'}</TableCell>
                       <TableCell>{row.productName || '-'}</TableCell>
                       <TableCell>
-                        <span className={!row.category || !LIQUOR_CATEGORIES.includes(String(row.category).toUpperCase() as typeof LIQUOR_CATEGORIES[number]) ? 'text-red-600' : ''}>
+                        <span className={!row.category || !LIQUOR_CATEGORIES.includes(String(row.category).toUpperCase() as typeof LIQUOR_CATEGORIES[number]) ? 'text-destructive' : ''}>
                           {row.category || '-'}
                         </span>
                       </TableCell>
@@ -349,14 +349,14 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
                       <TableCell className="text-right">{row.defaultTareG ?? '-'}</TableCell>
                       <TableCell>
                         {row.errors.length > 0 ? (
-                          <div className="flex items-center gap-1 text-red-600">
+                          <div className="flex items-center gap-1 text-destructive">
                             <AlertCircle className="h-4 w-4" />
                             <span className="text-xs" title={row.errors.join(', ')}>
                               {row.errors.length} error{row.errors.length > 1 ? 's' : ''}
                             </span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1 text-green-600">
+                          <div className="flex items-center gap-1 text-emerald-500">
                             <CheckCircle2 className="h-4 w-4" />
                             <span className="text-xs">Valid</span>
                           </div>
@@ -377,17 +377,17 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
           {/* Validation Errors Summary */}
           {invalidRows.length > 0 && (
             <div className="space-y-2">
-              <Label className="text-red-600">Validation Errors</Label>
-              <div className="border border-red-200 rounded-lg p-4 bg-red-50 max-h-[200px] overflow-auto">
+              <Label className="text-destructive">Validation Errors</Label>
+              <div className="border border-destructive/30 rounded-lg p-4 bg-destructive/10 max-h-[200px] overflow-auto">
                 <ul className="space-y-1 text-sm">
                   {invalidRows.slice(0, 20).map((row) => (
-                    <li key={row.rowNumber} className="text-red-700">
+                    <li key={row.rowNumber} className="text-destructive">
                       <span className="font-medium">Row {row.rowNumber}:</span>{' '}
                       {row.errors.join('; ')}
                     </li>
                   ))}
                   {invalidRows.length > 20 && (
-                    <li className="text-red-600 font-medium">
+                    <li className="text-destructive font-medium">
                       ... and {invalidRows.length - 20} more errors
                     </li>
                   )}
@@ -424,12 +424,12 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
         <div
           className={`p-4 rounded-lg ${
             importResult.success
-              ? 'bg-green-50 border border-green-200'
-              : 'bg-yellow-50 border border-yellow-200'
+              ? 'bg-emerald-500/10 border border-emerald-500/30'
+              : 'bg-amber-500/10 border border-amber-500/30'
           }`}
         >
           {importResult.success ? (
-            <div className="flex items-center gap-2 text-green-700">
+            <div className="flex items-center gap-2 text-emerald-500">
               <CheckCircle2 className="h-5 w-5" />
               <div>
                 <p className="font-medium">Import successful!</p>
@@ -442,15 +442,15 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
             </div>
           ) : (
             <div>
-              <div className="flex items-center gap-2 text-yellow-700 mb-2">
+              <div className="flex items-center gap-2 text-amber-500 mb-2">
                 <AlertCircle className="h-5 w-5" />
                 <p className="font-medium">Import completed with issues</p>
               </div>
-              <p className="text-sm text-yellow-700 mb-2">
+              <p className="text-sm text-amber-500 mb-2">
                 Imported {importResult.imported}, skipped {importResult.skipped}, errors: {importResult.errors.length}
               </p>
               {importResult.errors.length > 0 && (
-                <ul className="text-sm text-yellow-800 space-y-1">
+                <ul className="text-sm text-amber-500 space-y-1">
                   {importResult.errors.slice(0, 5).map((error, index) => (
                     <li key={index}>
                       Row {error.row}: {error.message}

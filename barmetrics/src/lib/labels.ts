@@ -119,11 +119,11 @@ export type ReprintReason = typeof REPRINT_REASONS[number];
  */
 export function getLabelStatusColor(status: LabelStatus): string {
   const colors: Record<LabelStatus, string> = {
-    UNASSIGNED: 'bg-yellow-100 text-yellow-800',
-    ASSIGNED: 'bg-green-100 text-green-800',
-    RETIRED: 'bg-gray-100 text-gray-800',
+    UNASSIGNED: 'bg-amber-500/10 text-amber-500',
+    ASSIGNED: 'bg-emerald-500/10 text-emerald-500',
+    RETIRED: 'bg-muted text-foreground',
   };
-  return colors[status] || 'bg-gray-100 text-gray-800';
+  return colors[status] || 'bg-muted text-foreground';
 }
 
 /**
@@ -133,14 +133,14 @@ export function getLabelStatusColor(status: LabelStatus): string {
  */
 export function getLabelEventColor(eventType: LabelEventType): string {
   const colors: Record<LabelEventType, string> = {
-    CREATED: 'bg-blue-100 text-blue-800',
-    ASSIGNED: 'bg-green-100 text-green-800',
+    CREATED: 'bg-primary/10 text-primary',
+    ASSIGNED: 'bg-emerald-500/10 text-emerald-500',
     LOCATION_CHANGED: 'bg-cyan-100 text-cyan-800',
-    SCANNED: 'bg-purple-100 text-purple-800',
-    RETIRED: 'bg-red-100 text-red-800',
-    REPRINTED: 'bg-orange-100 text-orange-800',
+    SCANNED: 'bg-primary/10 text-primary',
+    RETIRED: 'bg-destructive/10 text-destructive',
+    REPRINTED: 'bg-amber-500/10 text-amber-500',
   };
-  return colors[eventType] || 'bg-gray-100 text-gray-800';
+  return colors[eventType] || 'bg-muted text-foreground';
 }
 
 /**
