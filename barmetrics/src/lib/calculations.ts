@@ -275,7 +275,7 @@ export const LIQUOR_SUBCLASSES: Record<LiquorClass, readonly string[]> = {
 export function normalizeForKey(s: string): string {
   return s
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036F]/g, '') // strip combining diacritical marks (NFKD residue)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '');
 }

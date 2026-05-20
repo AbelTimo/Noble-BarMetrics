@@ -202,26 +202,44 @@ export type ProductFilterParams = z.infer<typeof productFilterSchema>;
 
 // Excel import validation schema
 // Handles both numbers and strings from Excel cells with proper transformation
+// Optional/empty-string-tolerant numeric coercion used by the Excel importer.
+const optionalNumber = z.preprocess(
+  (v) => (v === '' || v == null ? null : typeof v === 'string' ? parseFloat(v) : v),
+  z.number().nullable().optional(),
+);
+const optionalText = z.preprocess(
+  (v) => (v == null ? null : String(v).trim()),
+  z.string().nullable().optional(),
+);
+
 export const excelImportRowSchema = z.object({
-  brand: z.string().min(1, 'Brand is required'),
-  productName: z.string().min(1, 'Product name is required'),
+  brand: z.string().min(1, 'Brand is required').transform(normalizeSpiritName),
+  productName: z.string().min(1, 'Product name is required').transform(normalizeSpiritName),
   category: z.string().transform((val) => val.toUpperCase()).pipe(
     z.enum(LIQUOR_CATEGORIES, { message: 'Invalid category' })
   ),
+  // Optional sub-class — free-form (validated against LIQUOR_SUBCLASSES at enrich time).
+  subClass: optionalText,
   abvPercent: z.union([
     z.number(),
     z.string().transform((val) => parseFloat(val)),
-  ]).pipe(z.number().min(0, 'ABV must be at least 0%').max(100, 'ABV cannot exceed 100%')),
+  ]).pipe(z.number().min(0, 'ABV must be at least 0%').max(95, 'ABV cannot exceed 95%')),
   nominalVolumeMl: z.union([
     z.number(),
     z.string().transform((val) => parseInt(val, 10)),
   ]).pipe(z.number().int('Volume must be a whole number').min(1, 'Volume must be at least 1ml').max(5000, 'Volume cannot exceed 5000ml')),
-  defaultTareG: z.union([
-    z.number(),
-    z.string().transform((val) => parseFloat(val)),
-    z.null(),
-    z.undefined(),
-  ]).pipe(z.number().min(0, 'Tare weight cannot be negative').max(2000, 'Tare weight seems too high').nullable().optional()),
+  defaultTareG: z.preprocess(
+    (v) => {
+      if (v == null || v === '') return null;
+      const n = typeof v === 'string' ? parseFloat(v) : v;
+      return Number.isFinite(n as number) ? n : null;
+    },
+    z.number().min(0, 'Tare weight cannot be negative').max(2000, 'Tare weight seems too high').nullable().optional(),
+  ),
+  // Optional whole-year age (whisky, brandy, …). Derived from productName when blank.
+  ageStatement: optionalNumber.pipe(z.number().int().min(0).max(120).nullable().optional()),
+  // Optional GS1 GTIN-12 / GTIN-13. Validated on import via isValidGtin().
+  upc: optionalText,
 });
 
 export type ExcelImportRow = z.input<typeof excelImportRowSchema>;

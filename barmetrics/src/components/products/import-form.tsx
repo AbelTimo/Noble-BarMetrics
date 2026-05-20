@@ -62,6 +62,7 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   'product': 'productName',
   'name': 'productName',
   'category': 'category',
+  'class': 'category',
   'type': 'category',
   'abv %': 'abvPercent',
   'abv%': 'abvPercent',
@@ -72,13 +73,29 @@ const COLUMN_MAPPINGS: Record<string, string> = {
   'volume': 'nominalVolumeMl',
   'size': 'nominalVolumeMl',
   'size (ml)': 'nominalVolumeMl',
+  'size(ml)': 'nominalVolumeMl',
   'bottle size': 'nominalVolumeMl',
+  'bottle size (ml)': 'nominalVolumeMl',
+  'sub-class': 'subClass',
+  'subclass': 'subClass',
+  'sub class': 'subClass',
+  'sub category': 'subClass',
+  'sub-category': 'subClass',
+  'age': 'ageStatement',
+  'age statement': 'ageStatement',
+  'age (years)': 'ageStatement',
+  'age years': 'ageStatement',
+  'years': 'ageStatement',
   'tare weight (g)': 'defaultTareG',
   'tare weight(g)': 'defaultTareG',
   'tare weight': 'defaultTareG',
   'tare': 'defaultTareG',
+  'tare (g)': 'defaultTareG',
   'empty weight': 'defaultTareG',
   'bottle weight': 'defaultTareG',
+  'upc': 'upc',
+  'gtin': 'upc',
+  'barcode': 'upc',
 };
 
 function normalizeColumnName(header: string): string | undefined {
@@ -253,6 +270,29 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
 
   return (
     <div className="space-y-6">
+      {/* Template download */}
+      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
+        <FileSpreadsheet className="h-5 w-5 text-primary mt-0.5" />
+        <div className="flex-1 space-y-1">
+          <p className="text-sm font-medium">Need a starting point?</p>
+          <p className="text-xs text-muted-foreground">
+            Download the stock import template with the right columns, example rows, and a Reference sheet listing every valid class, sub-class, and TTB bottle size.
+          </p>
+          <div className="flex gap-2 pt-1">
+            <Button asChild variant="outline" size="sm">
+              <a href="/templates/stock-import-template.xlsx" download>
+                Download .xlsx template
+              </a>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <a href="/templates/stock-import-template.csv" download>
+                .csv version
+              </a>
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* File Upload */}
       <div className="space-y-2">
         <Label htmlFor="file">Excel File</Label>
