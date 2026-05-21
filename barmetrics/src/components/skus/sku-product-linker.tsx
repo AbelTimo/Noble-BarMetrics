@@ -125,9 +125,9 @@ export function SKUProductLinker({ skuId, linkedProducts, onUpdate }: SKUProduct
             </SelectTrigger>
             <SelectContent>
               {availableProducts.length === 0 ? (
-                <SelectItem value="" disabled>
+                <div className="px-2 py-1.5 text-sm text-muted-foreground">
                   No available products
-                </SelectItem>
+                </div>
               ) : (
                 availableProducts.map((product) => (
                   <SelectItem key={product.id} value={product.id}>
