@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -146,6 +146,7 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const parseExcelFile = useCallback(async (selectedFile: File) => {
     setParseError(null);
@@ -299,21 +300,31 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
       <div className="space-y-2">
         <Label htmlFor="file">Excel File</Label>
         {!file ? (
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-            <Input
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
+            className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <input
+              ref={fileInputRef}
               id="file"
               type="file"
               accept=".xlsx,.xls"
               onChange={handleFileChange}
-              className="hidden"
+              className="sr-only"
             />
-            <label htmlFor="file" className="cursor-pointer">
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm font-medium">Click to upload Excel file</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Supports .xlsx and .xls files
-              </p>
-            </label>
+            <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-sm font-medium">Click to upload Excel file</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Supports .xlsx and .xls files
+            </p>
           </div>
         ) : (
           <div className="flex items-center gap-3 p-4 border rounded-lg bg-muted/30">
