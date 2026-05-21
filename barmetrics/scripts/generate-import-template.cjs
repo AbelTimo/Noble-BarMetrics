@@ -47,9 +47,11 @@ const COLUMNS = [
   'UPC',
 ];
 
+// UPC column is illustrative — left blank so the template imports cleanly
+// without users having to compute GS1 check digits for placeholder values.
 const EXAMPLES = [
-  ["Tito's", 'Handmade Vodka', 'VODKA', '', 750, 40,   '', 480, '619947000018'],
-  ['Glenlivet', '12 Year',     'WHISKEY', 'SCOTCH_SINGLE_MALT', 750, 40, 12, '', '080432400123'],
+  ["Tito's", 'Handmade Vodka', 'VODKA', '', 750, 40,   '', 480, ''],
+  ['Glenlivet', '12 Year',     'WHISKEY', 'SCOTCH_SINGLE_MALT', 750, 40, 12, '', ''],
   ['Patrón',   'Silver',       'TEQUILA', 'BLANCO',             750, 40, '', 610, ''],
 ];
 

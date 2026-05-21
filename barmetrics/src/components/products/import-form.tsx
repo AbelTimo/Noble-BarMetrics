@@ -154,8 +154,10 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
     try {
       const arrayBuffer = await selectedFile.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
+      // Prefer the "Stock" sheet (template layout); fall back to the first sheet.
+      // Must match the server route, otherwise preview != what gets imported.
+      const sheetName = workbook.SheetNames.find((n) => /^stock$/i.test(n)) || workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
       const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
 
       if (rawData.length === 0) {
