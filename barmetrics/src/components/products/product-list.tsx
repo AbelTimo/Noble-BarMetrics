@@ -21,7 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LIQUOR_CATEGORIES } from '@/lib/calculations';
+import { LIQUOR_CLASSES } from '@/lib/calculations';
 import { Plus, Search, Edit, Trash2, Upload, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 type SortField = 'brand' | 'category' | 'abvPercent' | 'nominalVolumeMl';
@@ -179,7 +179,7 @@ export function ProductList() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {LIQUOR_CATEGORIES.map((cat) => (
+                {LIQUOR_CLASSES.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
                   </SelectItem>

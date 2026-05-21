@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { skuSchema, type SKUFormData } from '@/lib/validations';
-import { LIQUOR_CATEGORIES, BOTTLE_SIZES } from '@/lib/calculations';
+import { LIQUOR_CLASSES, BOTTLE_SIZES } from '@/lib/calculations';
 import { generateSKUCode } from '@/lib/labels';
 import { useEffect, useState } from 'react';
 import { BottleDatabaseSearch } from './bottle-database-search';
@@ -61,7 +61,7 @@ export function SKUForm({
   useEffect(() => {
     if (autoGenerateCode && category && sizeMl) {
       const suggestedCode = generateSKUCode(
-        category as typeof LIQUOR_CATEGORIES[number],
+        category as typeof LIQUOR_CLASSES[number],
         sizeMl,
         existingCount + 1
       );
@@ -76,13 +76,13 @@ export function SKUForm({
           <Label htmlFor="category">Category *</Label>
           <Select
             defaultValue={defaultValues?.category || 'VODKA'}
-            onValueChange={(value) => setValue('category', value as typeof LIQUOR_CATEGORIES[number])}
+            onValueChange={(value) => setValue('category', value as typeof LIQUOR_CLASSES[number])}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              {LIQUOR_CATEGORIES.map((cat) => (
+              {LIQUOR_CLASSES.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
                 </SelectItem>

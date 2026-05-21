@@ -199,26 +199,6 @@ export function calculateFullBottleWeight(
 }
 
 /**
- * Liquor categories for product classification
- */
-export const LIQUOR_CATEGORIES = [
-  'VODKA',
-  'GIN',
-  'WHISKEY',
-  'RUM',
-  'TEQUILA',
-  'BRANDY',
-  'LIQUEUR',
-  'MEZCAL',
-  'COGNAC',
-  'SCOTCH',
-  'BOURBON',
-  'OTHER',
-] as const;
-
-export type LiquorCategory = typeof LIQUOR_CATEGORIES[number];
-
-/**
  * TTB Standards of Fill — authorized US bottle sizes for distilled spirits.
  * 27 CFR Part 5, Subpart K. New imports/forms should restrict to this set.
  */

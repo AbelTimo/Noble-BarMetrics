@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { productSchema, type ProductFormData } from '@/lib/validations';
-import { LIQUOR_CATEGORIES, LIQUOR_SUBCLASSES, BOTTLE_SIZES, suggestTareWeight, type LiquorClass } from '@/lib/calculations';
+import { LIQUOR_CLASSES, LIQUOR_SUBCLASSES, BOTTLE_SIZES, suggestTareWeight, type LiquorClass } from '@/lib/calculations';
 import { useEffect } from 'react';
 import { BottleDatabaseSearch } from '@/components/skus/bottle-database-search';
 
@@ -73,7 +73,7 @@ export function ProductForm({
           onSelect={(bottle) => {
             setValue('brand', bottle.brand);
             setValue('productName', bottle.productName);
-            setValue('category', bottle.category as typeof LIQUOR_CATEGORIES[number]);
+            setValue('category', bottle.category as typeof LIQUOR_CLASSES[number]);
             setValue('nominalVolumeMl', bottle.sizeMl);
             if (bottle.abvPercent != null) setValue('abvPercent', bottle.abvPercent);
             if (bottle.tareWeightG != null) setValue('defaultTareG', bottle.tareWeightG);
@@ -115,13 +115,13 @@ export function ProductForm({
           <Label htmlFor="category">Category *</Label>
           <Select
             defaultValue={defaultValues?.category || 'VODKA'}
-            onValueChange={(value) => setValue('category', value as typeof LIQUOR_CATEGORIES[number])}
+            onValueChange={(value) => setValue('category', value as typeof LIQUOR_CLASSES[number])}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              {LIQUOR_CATEGORIES.map((cat) => (
+              {LIQUOR_CLASSES.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
                 </SelectItem>

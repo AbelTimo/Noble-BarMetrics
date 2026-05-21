@@ -2,7 +2,7 @@
  * Label management utilities for QR code generation and SKU code handling
  */
 
-import { LIQUOR_CATEGORIES } from './calculations';
+import { LIQUOR_CLASSES } from './calculations';
 
 /**
  * Characters used for label code generation
@@ -80,7 +80,7 @@ export function isValidLabelCode(code: string): boolean {
  * @returns Suggested SKU code
  */
 export function generateSKUCode(
-  category: typeof LIQUOR_CATEGORIES[number],
+  category: typeof LIQUOR_CLASSES[number],
   sizeMl: number,
   sequence: number
 ): string {

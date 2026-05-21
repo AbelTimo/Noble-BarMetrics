@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import {
-  LIQUOR_CATEGORIES,
+  LIQUOR_CLASSES,
   BOTTLE_SIZES,
   STANDARD_BOTTLE_SIZES,
   normalizeSpiritName,
@@ -19,10 +19,9 @@ export const productSchema = z.object({
   productName: z.string()
     .max(100, 'Product name must be 100 characters or less')
     .transform(normalizeSpiritName),
-  // category = TTB top-level class. Backward-compatible with legacy values
-  // (BOURBON/SCOTCH/COGNAC are tolerated for read; new entries should use the
-  // class+subClass pair, with the form deriving category accordingly).
-  category: z.enum(LIQUOR_CATEGORIES, { message: 'Please select a valid category' }),
+  // category = TTB top-level class; finer types live in subClass
+  // (BOURBON/SCOTCH/COGNAC are sub-classes of WHISKEY/BRANDY, not categories).
+  category: z.enum(LIQUOR_CLASSES, { message: 'Please select a valid category' }),
   subClass: z.string().max(40).optional().nullable(),
   abvPercent: z.number()
     .min(0, 'ABV must be at least 0%')
@@ -195,7 +194,7 @@ export type PaginationParams = z.infer<typeof paginationSchema>;
 // Search/filter schemas
 export const productFilterSchema = z.object({
   search: z.string().optional(),
-  category: z.enum(LIQUOR_CATEGORIES).optional(),
+  category: z.enum(LIQUOR_CLASSES).optional(),
   isActive: z.boolean().optional(),
 });
 
@@ -215,9 +214,13 @@ const optionalText = z.preprocess(
 
 export const excelImportRowSchema = z.object({
   brand: z.string().min(1, 'Brand is required').transform(normalizeSpiritName),
-  productName: z.string().min(1, 'Product name is required').transform(normalizeSpiritName),
+  // Optional — single-word beverages carry identity in `brand`.
+  productName: z.preprocess(
+    (v) => (v == null ? '' : String(v)),
+    z.string().transform(normalizeSpiritName),
+  ),
   category: z.string().transform((val) => val.toUpperCase()).pipe(
-    z.enum(LIQUOR_CATEGORIES, { message: 'Invalid category' })
+    z.enum(LIQUOR_CLASSES, { message: 'Invalid class' })
   ),
   // Optional sub-class — free-form (validated against LIQUOR_SUBCLASSES at enrich time).
   subClass: optionalText,
@@ -268,7 +271,7 @@ export const skuSchema = z.object({
     .min(1, 'Name is required')
     .max(100, 'Name must be 100 characters or less'),
   description: z.string().max(500, 'Description must be 500 characters or less').optional().nullable(),
-  category: z.enum(LIQUOR_CATEGORIES, { message: 'Please select a valid category' }),
+  category: z.enum(LIQUOR_CLASSES, { message: 'Please select a valid category' }),
   sizeMl: z.number()
     .int('Size must be a whole number')
     .min(1, 'Size must be at least 1ml')
@@ -414,7 +417,7 @@ export type LabelFilterParams = z.infer<typeof labelFilterSchema>;
 // SKU filter schema
 export const skuFilterSchema = z.object({
   search: z.string().optional(),
-  category: z.enum(LIQUOR_CATEGORIES).optional(),
+  category: z.enum(LIQUOR_CLASSES).optional(),
   isActive: z.boolean().optional(),
 });
 

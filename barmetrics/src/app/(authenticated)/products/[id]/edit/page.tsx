@@ -11,6 +11,7 @@ interface Product {
   brand: string;
   productName: string;
   category: string;
+  subClass: string | null;
   abvPercent: number;
   nominalVolumeMl: number;
   defaultDensity: number;
@@ -96,6 +97,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               brand: product.brand,
               productName: product.productName,
               category: product.category as ProductFormData['category'],
+              subClass: product.subClass,
               abvPercent: product.abvPercent,
               nominalVolumeMl: product.nominalVolumeMl,
               defaultDensity: product.defaultDensity,

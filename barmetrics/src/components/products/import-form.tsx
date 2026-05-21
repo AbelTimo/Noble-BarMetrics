@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, X } from 'lucide-react';
-import { LIQUOR_CATEGORIES } from '@/lib/calculations';
+import { LIQUOR_CLASSES } from '@/lib/calculations';
 import type { DuplicateHandling } from '@/lib/validations';
 
 interface ImportFormProps {
@@ -110,18 +110,16 @@ function validateRow(row: ParsedRow): string[] {
     errors.push('Brand is required');
   }
 
-  if (!row.productName || String(row.productName).trim() === '') {
-    errors.push('Product name is required');
-  }
+  // Product name is optional — single-word beverages carry identity in Brand.
 
   const category = String(row.category || '').toUpperCase();
-  if (!category || !LIQUOR_CATEGORIES.includes(category as typeof LIQUOR_CATEGORIES[number])) {
-    errors.push(`Invalid category: ${row.category || 'empty'}`);
+  if (!category || !LIQUOR_CLASSES.includes(category as typeof LIQUOR_CLASSES[number])) {
+    errors.push(`Invalid class: ${row.category || 'empty'}`);
   }
 
   const abv = parseFloat(String(row.abvPercent));
-  if (isNaN(abv) || abv < 0 || abv > 100) {
-    errors.push('ABV must be between 0 and 100');
+  if (isNaN(abv) || abv < 0 || abv > 95) {
+    errors.push('ABV must be between 0 and 95');
   }
 
   const volume = parseInt(String(row.nominalVolumeMl), 10);
@@ -393,7 +391,7 @@ export function ImportForm({ onSuccess }: ImportFormProps) {
                       <TableCell>{row.brand || '-'}</TableCell>
                       <TableCell>{row.productName || '-'}</TableCell>
                       <TableCell>
-                        <span className={!row.category || !LIQUOR_CATEGORIES.includes(String(row.category).toUpperCase() as typeof LIQUOR_CATEGORIES[number]) ? 'text-destructive' : ''}>
+                        <span className={!row.category || !LIQUOR_CLASSES.includes(String(row.category).toUpperCase() as typeof LIQUOR_CLASSES[number]) ? 'text-destructive' : ''}>
                           {row.category || '-'}
                         </span>
                       </TableCell>
