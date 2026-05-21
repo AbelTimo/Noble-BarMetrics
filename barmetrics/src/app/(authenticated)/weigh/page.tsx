@@ -323,7 +323,7 @@ function WeighTrackPageContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* Search */}
+              {/* Search with inline suggestions (typeahead) */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -332,9 +332,34 @@ function WeighTrackPageContent() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
+                {searchQuery.trim() !== '' && (
+                  <div className="absolute z-20 mt-1 w-full max-h-[300px] overflow-auto rounded-md border bg-popover shadow-md">
+                    {filteredSKUs.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        No products match "{searchQuery}".
+                      </div>
+                    ) : (
+                      filteredSKUs.slice(0, 50).map((sku) => (
+                        <button
+                          type="button"
+                          key={sku.id}
+                          onClick={() => {
+                            handleSKUSelect(sku.id);
+                            setSearchQuery('');
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <Badge variant="outline" className="text-xs">{sku.category}</Badge>
+                          <span>{sku.name}</span>
+                          <span className="text-muted-foreground">- {sku.sizeMl}ml</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* SKU Select */}
+              {/* SKU Select — kept as the canonical picker for users who prefer scrolling */}
               <Select value={selectedSKU?.id} onValueChange={handleSKUSelect}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select product" />
