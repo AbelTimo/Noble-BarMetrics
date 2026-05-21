@@ -14,8 +14,9 @@ export const productSchema = z.object({
     .min(1, 'Brand is required')
     .max(100, 'Brand must be 100 characters or less')
     .transform(normalizeSpiritName),
+  // Optional: single-word beverages (Heineken, Coffee, …) carry their identity
+  // in `brand` alone, so an empty productName is allowed.
   productName: z.string()
-    .min(1, 'Product name is required')
     .max(100, 'Product name must be 100 characters or less')
     .transform(normalizeSpiritName),
   // category = TTB top-level class. Backward-compatible with legacy values

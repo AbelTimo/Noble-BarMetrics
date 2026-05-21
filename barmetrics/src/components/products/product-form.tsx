@@ -98,11 +98,11 @@ export function ProductForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="productName">Product Name *</Label>
+          <Label htmlFor="productName">Product Name</Label>
           <Input
             id="productName"
             {...register('productName')}
-            placeholder="e.g., Handmade Vodka"
+            placeholder="e.g., Handmade Vodka (optional)"
           />
           {errors.productName && (
             <p className="text-sm text-destructive">{errors.productName.message}</p>
