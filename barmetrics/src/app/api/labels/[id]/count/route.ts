@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { calculateVolumeFromWeight, getBottleTareWeight, getDensityForSKU } from '@/lib/inventory-calculations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 /**
  * POST /api/labels/[id]/count
@@ -20,6 +22,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requirePermission(request, PERMISSIONS.LABEL_SCAN);
+
     const { id } = await params;
     const labelId = id;
     const body = await request.json();
@@ -172,6 +176,12 @@ export async function POST(
       warnings: calculation.warnings,
     });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error saving count:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { saleCreateSchema } from '@/lib/validations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,6 +45,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.SALE_CREATE);
+
     const body = await request.json();
     const validated = saleCreateSchema.parse(body);
 
@@ -76,6 +80,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(sale, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error creating sale:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json({ error: 'Validation error', details: error }, { status: 400 });

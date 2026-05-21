@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { measurementCreateSchema } from '@/lib/validations';
 import { calculateVolumeFromWeight, getDensityForABV, DEFAULT_STANDARD_POUR_ML } from '@/lib/calculations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -30,6 +32,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    await requirePermission(request, PERMISSIONS.MEASUREMENT_CREATE);
+
     const { id: sessionId } = await params;
     const body = await request.json();
 
@@ -100,6 +104,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(measurement, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error creating measurement:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(

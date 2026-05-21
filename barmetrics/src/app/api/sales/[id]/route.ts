@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(
   request: NextRequest,
@@ -41,10 +43,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requirePermission(request, PERMISSIONS.SALE_DELETE);
+
     const { id } = await params;
     await prisma.sale.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error deleting sale:', error);
     return NextResponse.json({ error: 'Failed to delete sale' }, { status: 500 });
   }

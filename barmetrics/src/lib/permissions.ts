@@ -23,12 +23,21 @@ export const PERMISSIONS = {
   LABEL_RETIRE: 'label:retire',
   LABEL_REPRINT: 'label:reprint',
 
+  // Product permissions
+  PRODUCT_VIEW: 'product:view',
+  PRODUCT_CREATE: 'product:create',
+  PRODUCT_UPDATE: 'product:update',
+  PRODUCT_DELETE: 'product:delete',
+
   // SKU permissions
   SKU_VIEW: 'sku:view',
   SKU_CREATE: 'sku:create',
   SKU_UPDATE: 'sku:update',
   SKU_DELETE: 'sku:delete',
   SKU_LINK_PRODUCTS: 'sku:link_products',
+
+  // Measurement / weighing permissions
+  MEASUREMENT_CREATE: 'measurement:create',
 
   // Location permissions
   LOCATION_VIEW: 'location:view',
@@ -51,6 +60,10 @@ export const PERMISSIONS = {
   // Variance permissions
   VARIANCE_VIEW: 'variance:view',
 
+  // Liquor request permissions
+  REQUEST_CREATE: 'request:create',
+  REQUEST_APPROVE: 'request:approve',
+
   // User management permissions
   USER_VIEW: 'user:view',
   USER_CREATE: 'user:create',
@@ -67,23 +80,32 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   BARTENDER: [
     PERMISSIONS.LABEL_VIEW,
     PERMISSIONS.LABEL_SCAN,
+    PERMISSIONS.PRODUCT_VIEW,
     PERMISSIONS.SKU_VIEW,
     PERMISSIONS.LOCATION_VIEW,
     PERMISSIONS.RECIPE_VIEW,
     PERMISSIONS.SALE_VIEW,
     PERMISSIONS.SALE_CREATE,
+    // Bartenders weigh bottles and request stock as part of daily work.
+    PERMISSIONS.MEASUREMENT_CREATE,
+    PERMISSIONS.REQUEST_CREATE,
   ],
 
   STOREKEEPER: [
     // All bartender permissions
     PERMISSIONS.LABEL_VIEW,
     PERMISSIONS.LABEL_SCAN,
+    PERMISSIONS.PRODUCT_VIEW,
     PERMISSIONS.SKU_VIEW,
     PERMISSIONS.LOCATION_VIEW,
     PERMISSIONS.RECIPE_VIEW,
     PERMISSIONS.SALE_VIEW,
     PERMISSIONS.SALE_CREATE,
+    PERMISSIONS.MEASUREMENT_CREATE,
+    PERMISSIONS.REQUEST_CREATE,
     // Additional storekeeper permissions
+    PERMISSIONS.PRODUCT_CREATE,
+    PERMISSIONS.PRODUCT_UPDATE,
     PERMISSIONS.LABEL_GENERATE,
     PERMISSIONS.LABEL_ASSIGN,
     PERMISSIONS.LABEL_CHANGE_LOCATION,
@@ -91,6 +113,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.AUDIT_VIEW,
     PERMISSIONS.RECIPE_CREATE,
     PERMISSIONS.VARIANCE_VIEW,
+    PERMISSIONS.REQUEST_APPROVE,
   ],
 
   MANAGER: [

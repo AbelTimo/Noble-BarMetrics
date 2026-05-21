@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { recipeUpdateSchema } from '@/lib/validations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(
   request: NextRequest,
@@ -37,6 +39,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requirePermission(request, PERMISSIONS.RECIPE_UPDATE);
+
     const { id } = await params;
     const body = await request.json();
     const validated = recipeUpdateSchema.parse(body);
@@ -70,6 +74,12 @@ export async function PUT(
 
     return NextResponse.json(recipe);
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error updating recipe:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json({ error: 'Validation error', details: error }, { status: 400 });
@@ -83,10 +93,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requirePermission(request, PERMISSIONS.RECIPE_DELETE);
+
     const { id } = await params;
     await prisma.recipe.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error deleting recipe:', error);
     return NextResponse.json({ error: 'Failed to delete recipe' }, { status: 500 });
   }

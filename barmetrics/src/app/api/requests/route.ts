@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { liquorRequestCreateSchema, liquorRequestFilterSchema } from '@/lib/validations';
-import { getSession } from '@/lib/auth';
+import { getSession, requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 // GET /api/requests - List requests
 export async function GET(request: NextRequest) {
@@ -92,6 +93,8 @@ export async function GET(request: NextRequest) {
 // POST /api/requests - Create new request
 export async function POST(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.REQUEST_CREATE);
+
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -145,6 +148,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newRequest, { status: 201 });
   } catch (error: any) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     if (error.name === 'ZodError') {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },

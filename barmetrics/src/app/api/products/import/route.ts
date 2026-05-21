@@ -12,6 +12,8 @@ import {
   type LiquorClass,
 } from '@/lib/calculations';
 import { ZodError } from 'zod';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 interface ImportError {
   row: number;
@@ -203,6 +205,8 @@ function slugForCode(s: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.PRODUCT_CREATE);
+
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const duplicateHandlingRaw = formData.get('duplicateHandling') as string | null;
@@ -388,6 +392,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result, { status: importErrors.length > 0 ? 207 : 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error processing import:', error);
     return NextResponse.json({ error: 'Failed to process import file' }, { status: 500 });
   }

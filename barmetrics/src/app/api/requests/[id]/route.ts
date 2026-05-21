@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { liquorRequestReviewSchema } from '@/lib/validations';
-import { getSession } from '@/lib/auth';
+import { getSession, requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 // GET /api/requests/[id] - Get single request
 export async function GET(
@@ -65,6 +66,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requirePermission(request, PERMISSIONS.REQUEST_APPROVE);
+
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -111,6 +114,12 @@ export async function PATCH(
 
     return NextResponse.json(updatedRequest);
   } catch (error: any) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     if (error.name === 'ZodError') {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -136,6 +145,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requirePermission(request, PERMISSIONS.REQUEST_APPROVE);
+
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -163,6 +174,12 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Request deleted successfully' });
   } catch (error: any) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     if (error.code === 'P2025') {
       return NextResponse.json({ error: 'Request not found' }, { status: 404 });
     }

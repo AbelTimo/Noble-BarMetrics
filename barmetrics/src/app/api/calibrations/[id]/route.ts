@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { calibrationUpdateSchema } from '@/lib/validations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -34,6 +36,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    await requirePermission(request, PERMISSIONS.PRODUCT_UPDATE);
+
     const { id } = await params;
     const body = await request.json();
     const validated = calibrationUpdateSchema.parse(body);
@@ -48,6 +52,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(calibration);
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error updating calibration:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
@@ -64,6 +74,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    await requirePermission(request, PERMISSIONS.PRODUCT_UPDATE);
+
     const { id } = await params;
 
     await prisma.bottleCalibration.delete({
@@ -72,6 +84,12 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ message: 'Calibration deleted' });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error deleting calibration:', error);
     return NextResponse.json(
       { error: 'Failed to delete calibration' },

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { productSkuLinkSchema } from '@/lib/validations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -28,6 +30,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    await requirePermission(request, PERMISSIONS.SKU_LINK_PRODUCTS);
+
     const { id: skuId } = await params;
     const body = await request.json();
     const validated = productSkuLinkSchema.parse(body);
@@ -94,6 +98,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(productSku, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error linking product to SKU:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
@@ -110,6 +120,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    await requirePermission(request, PERMISSIONS.SKU_LINK_PRODUCTS);
+
     const { id: skuId } = await params;
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get('productId');
@@ -132,6 +144,12 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ message: 'Product unlinked from SKU' });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error unlinking product from SKU:', error);
     return NextResponse.json(
       { error: 'Failed to unlink product from SKU' },

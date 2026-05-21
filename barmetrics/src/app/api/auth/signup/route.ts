@@ -33,11 +33,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // The very first account bootstraps as MANAGER; everyone after is a
+    // BARTENDER whom a manager can promote on the /users page.
+    const userCount = await prisma.user.count();
+    const role = userCount === 0 ? 'MANAGER' : 'BARTENDER';
+
     const user = await prisma.user.create({
       data: {
         username: lowered,
         displayName,
-        role: 'BARTENDER',
+        role,
         pin: hashPin(pin),
         isActive: true,
       },

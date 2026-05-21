@@ -87,7 +87,9 @@ function SignupForm() {
         <Card>
           <CardHeader>
             <CardTitle>Sign up</CardTitle>
-            <CardDescription>New accounts start with the Bartender role.</CardDescription>
+            <CardDescription>
+              New accounts start as Bartender. A Manager can promote you later.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={handleSubmit}>

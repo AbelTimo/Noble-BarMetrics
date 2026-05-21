@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
   try {
@@ -57,6 +59,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.PRODUCT_CREATE);
+
     const body = await request.json();
     const {
       brand,
@@ -102,6 +106,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(bottle, { status: 201 });
   } catch (error: any) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     // Handle unique constraint violation
     if (error.code === 'P2002') {
       return NextResponse.json(

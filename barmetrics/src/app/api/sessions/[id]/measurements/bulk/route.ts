@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 import { bulkMeasurementSchema } from '@/lib/validations';
 import { calculateVolumeFromWeight, DEFAULT_STANDARD_POUR_ML } from '@/lib/calculations';
 import { detectAnomalies, calculateVariance } from '@/lib/anomalies';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -12,6 +14,8 @@ type RouteParams = { params: Promise<{ id: string }> };
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    await requirePermission(request, PERMISSIONS.MEASUREMENT_CREATE);
+
     const { id: sessionId } = await params;
     const body = await request.json();
 
@@ -231,6 +235,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       errors: errors.length > 0 ? errors : undefined,
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error creating bulk measurements:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(

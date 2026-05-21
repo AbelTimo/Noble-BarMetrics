@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { calibrationCreateSchema } from '@/lib/validations';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,6 +35,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.PRODUCT_UPDATE);
+
     const body = await request.json();
     const validated = calibrationCreateSchema.parse(body);
 
@@ -45,6 +49,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(calibration, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error creating calibration:', error);
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
