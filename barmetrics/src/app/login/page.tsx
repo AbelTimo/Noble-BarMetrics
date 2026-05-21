@@ -68,7 +68,7 @@ function LoginForm() {
           <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Wine className="h-6 w-6" strokeWidth={1.75} />
           </span>
-          <h1 className="text-2xl font-semibold tracking-tight">BarMetrics</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Melekyia</h1>
           <p className="text-sm text-muted-foreground">Bar inventory &amp; analytics</p>
         </div>
 

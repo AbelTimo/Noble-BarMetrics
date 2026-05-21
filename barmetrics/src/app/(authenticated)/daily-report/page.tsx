@@ -68,7 +68,7 @@ export default function DailyReportPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `BarMetrics Daily Report - ${report.date}`,
+          title: `Melekyia Daily Report - ${report.date}`,
           text,
         });
       } catch {
@@ -164,7 +164,7 @@ export default function DailyReportPage() {
           {/* Report Header */}
           <Card className="p-6 bg-card/40 border-border print:border print:border-border">
             <div className="text-center mb-4">
-              <h2 className="text-xl font-bold tracking-[0.2em] uppercase text-foreground">BarMetrics Daily Report</h2>
+              <h2 className="text-xl font-bold tracking-[0.2em] uppercase text-foreground">Melekyia Daily Report</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {new Date(report.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </p>

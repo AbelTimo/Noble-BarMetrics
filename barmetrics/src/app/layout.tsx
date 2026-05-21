@@ -12,7 +12,7 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "BarMetrics - Bar Inventory Management",
+  title: "Melekyia - Bar Inventory Management",
   description: "Bar inventory management using bottle weight to estimate remaining liquor",
 };
 

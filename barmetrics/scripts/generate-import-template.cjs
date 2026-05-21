@@ -56,7 +56,7 @@ const EXAMPLES = [
 ];
 
 const INSTRUCTIONS = [
-  ['BarMetrics — Stock Import Template'],
+  ['Melekyia — Stock Import Template'],
   [''],
   ['Fill in the "Stock" sheet, one row per (brand × product × size). Then upload the file at /products/import.'],
   [''],

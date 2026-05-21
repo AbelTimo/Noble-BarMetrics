@@ -70,7 +70,7 @@ export function NavHeader() {
               <Wine className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <span className="hidden text-sm font-semibold tracking-tight sm:inline-block">
-              BarMetrics
+              Melekyia
             </span>
           </Link>
 

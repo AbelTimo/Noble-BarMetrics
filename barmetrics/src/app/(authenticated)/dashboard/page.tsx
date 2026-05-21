@@ -60,7 +60,7 @@ export default function Home() {
         <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <Wine className="h-6 w-6" strokeWidth={1.75} />
         </span>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">BarMetrics</h1>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Melekyia</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
           Premium bar inventory management — inventory, Bluetooth scale, and analytics in one place.
         </p>

@@ -92,8 +92,8 @@ export async function GET(request: NextRequest) {
     ].join('\n');
 
     const filename = sessionId
-      ? `barmetrics-session-${sessionId}.csv`
-      : `barmetrics-export-${new Date().toISOString().split('T')[0]}.csv`;
+      ? `melekyia-session-${sessionId}.csv`
+      : `melekyia-export-${new Date().toISOString().split('T')[0]}.csv`;
 
     return new NextResponse(csvContent, {
       headers: {

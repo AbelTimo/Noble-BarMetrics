@@ -1,4 +1,4 @@
-# Noble BarMetrics
+# Melekyia
 
 A weight-based bar inventory management system that calculates remaining liquor volume from bottle weight measurements.
 
@@ -29,7 +29,7 @@ A weight-based bar inventory management system that calculates remaining liquor 
 
 ## Overview
 
-Noble BarMetrics provides accurate liquor inventory tracking by measuring bottle weights and calculating remaining volume using alcohol-specific density values. This approach eliminates guesswork and provides precise pour counts for cost control.
+Melekyia provides accurate liquor inventory tracking by measuring bottle weights and calculating remaining volume using alcohol-specific density values. This approach eliminates guesswork and provides precise pour counts for cost control.
 
 **Key Benefits:**
 - Accurate inventory counts without visual estimation

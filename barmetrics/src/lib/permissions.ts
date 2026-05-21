@@ -1,5 +1,5 @@
 /**
- * Role-based permissions system for BarMetrics
+ * Role-based permissions system for Melekyia
  *
  * Roles:
  * - BARTENDER: scan+view only

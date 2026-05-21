@@ -1,5 +1,5 @@
 /**
- * Authentication utilities for BarMetrics
+ * Authentication utilities for Melekyia
  */
 
 import { cookies } from 'next/headers';

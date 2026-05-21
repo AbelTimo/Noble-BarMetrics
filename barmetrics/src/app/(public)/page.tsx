@@ -12,7 +12,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-center gap-3 mb-6">
             <Wine className="h-12 w-12 text-muted-foreground" strokeWidth={1.5} />
             <h1 className="text-5xl md:text-6xl font-bold tracking-[0.25em] uppercase text-foreground">
-              BarMetrics
+              Melekyia
             </h1>
           </div>
 
@@ -126,7 +126,7 @@ export default function LandingPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="bg-card text-foreground border border-border rounded-2xl p-8 md:p-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Why Choose BarMetrics?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">Why Choose Melekyia?</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
@@ -168,7 +168,7 @@ export default function LandingPage() {
             Ready to Transform Your Bar?
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Join modern establishments using BarMetrics for precision inventory management
+            Join modern establishments using Melekyia for precision inventory management
           </p>
           <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-lg">
             <Link href="/login">
@@ -183,7 +183,7 @@ export default function LandingPage() {
       <footer className="border-t border-border bg-accent">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-sm text-muted-foreground">
-            <p>&copy; 2026 BarMetrics. Premium inventory management for the hospitality industry.</p>
+            <p>&copy; 2026 Melekyia. Premium inventory management for the hospitality industry.</p>
           </div>
         </div>
       </footer>
