@@ -1,0 +1,11 @@
+# OS
+.DS_Store
+
+# Dev/QA screenshots dropped at the repo root
+/*.png
+
+# Playwright MCP session output (snapshots, console logs, screenshots)
+.playwright-mcp/
+
+# Local Claude Code MCP server config
+.mcp.json
