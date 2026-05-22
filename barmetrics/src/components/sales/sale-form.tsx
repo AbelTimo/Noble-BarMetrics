@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, ArrowLeft, Save } from 'lucide-react';
 import { SALE_SHIFTS, SALE_ITEM_TYPES } from '@/lib/validations';
 import { toast } from 'sonner';
+import { localDateString } from '@/lib/utils';
 
 interface Recipe {
   id: string;
@@ -35,7 +36,7 @@ interface SaleItemRow {
 export function SaleForm() {
   const router = useRouter();
 
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(localDateString());
   const [shift, setShift] = useState('');
   const [notes, setNotes] = useState('');
   const [items, setItems] = useState<SaleItemRow[]>([

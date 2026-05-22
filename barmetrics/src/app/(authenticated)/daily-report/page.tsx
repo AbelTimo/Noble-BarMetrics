@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Download, Share2, Printer, Loader2, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
+import { localDateString } from '@/lib/utils';
 
 interface StockProduct {
   productId: string;
@@ -38,7 +39,7 @@ interface DailyReport {
 }
 
 export default function DailyReportPage() {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(localDateString());
   const [report, setReport] = useState<DailyReport | null>(null);
   const [loading, setLoading] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
