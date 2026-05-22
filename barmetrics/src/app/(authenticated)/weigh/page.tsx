@@ -40,6 +40,8 @@ interface SKU {
   bottleTareG: number | null;
   densityGPerMl: number | null;
   abvPercent: number | null;
+  // Linked catalog products (a measurement records against a Product).
+  products?: Array<{ isPrimary: boolean; product: { id: string } }>;
 }
 
 interface Session {
@@ -155,6 +157,18 @@ function WeighTrackPageContent() {
       return;
     }
 
+    // A measurement records against a Product — resolve it from the SKU link
+    // (prefer the primary product). Fail fast before creating a session.
+    const productId =
+      selectedSKU.products?.find((p) => p.isPrimary)?.product?.id ??
+      selectedSKU.products?.[0]?.product?.id;
+    if (!productId) {
+      alert(
+        'This SKU has no linked product. Link a product to it on the SKU page before weighing.',
+      );
+      return;
+    }
+
     // Create session if none exists
     let sessionId = selectedSession?.id;
     if (!sessionId) {
@@ -185,13 +199,11 @@ function WeighTrackPageContent() {
 
     setIsSaving(true);
     try {
-      // For SKU-based measurement, we need to convert to product-based
-      // This is a simplified version - you may need to adjust based on your data model
       const response = await fetch(`/api/sessions/${sessionId}/measurements`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          skuId: selectedSKU.id,
+          productId,
           grossWeightG: parseFloat(grossWeightG),
           tareWeightG: selectedSKU.bottleTareG,
           standardPourMl: DEFAULT_STANDARD_POUR_ML,
