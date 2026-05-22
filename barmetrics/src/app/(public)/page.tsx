@@ -9,11 +9,8 @@ export default function LandingPage() {
       <div className="container mx-auto px-4 pt-20 pb-16">
         <div className="max-w-4xl mx-auto text-center">
           {/* Logo & Brand */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Wine className="h-12 w-12 text-muted-foreground" strokeWidth={1.5} />
-            <h1 className="text-5xl md:text-6xl font-bold tracking-[0.25em] uppercase text-foreground">
-              Melekyia
-            </h1>
+          <div className="flex items-center justify-center mb-6">
+            <img src="/logo.png" alt="Melekyia" className="h-48 md:h-56 w-auto" />
           </div>
 
           {/* Tagline */}

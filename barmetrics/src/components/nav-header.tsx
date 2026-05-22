@@ -66,9 +66,11 @@ export function NavHeader() {
             href="/dashboard"
             className="flex items-center gap-2 transition-opacity hover:opacity-80"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Wine className="h-5 w-5" strokeWidth={1.75} />
-            </span>
+            <img
+              src="/logo-mark.png"
+              alt="Melekyia"
+              className="h-9 w-auto"
+            />
             <span className="hidden text-sm font-semibold tracking-tight sm:inline-block">
               Melekyia
             </span>

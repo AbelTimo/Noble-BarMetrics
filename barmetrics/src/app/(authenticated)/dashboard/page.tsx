@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { Package, FileBarChart, Scale, Tag, FileText, ArrowRight, Wine } from 'lucide-react';
+import { Package, FileBarChart, Scale, Tag, FileText, ArrowRight } from 'lucide-react';
 
 const primaryActions = [
   {
@@ -57,10 +57,7 @@ export default function Home() {
     <div className="space-y-12">
       {/* Header */}
       <div className="flex flex-col items-center text-center">
-        <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Wine className="h-6 w-6" strokeWidth={1.75} />
-        </span>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Melekyia</h1>
+        <img src="/logo.png" alt="Melekyia" className="mb-2 h-36 w-auto" />
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
           Premium bar inventory management — inventory, Bluetooth scale, and analytics in one place.
         </p>

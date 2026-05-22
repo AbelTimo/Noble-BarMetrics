@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Wine, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 function CenteredMessage({ children }: { children: React.ReactNode }) {
   return (
@@ -65,10 +65,7 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center text-center">
-          <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <Wine className="h-6 w-6" strokeWidth={1.75} />
-          </span>
-          <h1 className="text-2xl font-semibold tracking-tight">Melekyia</h1>
+          <img src="/logo.png" alt="Melekyia" className="mb-3 h-28 w-auto" />
           <p className="text-sm text-muted-foreground">Bar inventory &amp; analytics</p>
         </div>
 
