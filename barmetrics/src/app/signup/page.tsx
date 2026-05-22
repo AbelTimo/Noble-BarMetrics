@@ -77,7 +77,7 @@ function SignupForm() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center text-center">
-          <img src="/logo.png" alt="Melekyia" className="mb-3 h-28 w-auto" />
+          <img src="/logo.png" alt="Melekyia" className="mb-3 h-40 w-auto" />
           <p className="text-sm text-muted-foreground">Create your account</p>
         </div>
 
