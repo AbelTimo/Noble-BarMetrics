@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.AUDIT_VIEW);
+
     const searchParams = request.nextUrl.searchParams;
     const sessionId = searchParams.get('sessionId');
     const startDate = searchParams.get('startDate');
@@ -102,6 +106,12 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error generating export:', error);
     return NextResponse.json(
       { error: 'Failed to generate export' },

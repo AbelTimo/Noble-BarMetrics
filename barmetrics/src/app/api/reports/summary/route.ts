@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { requirePermission, AuthError } from '@/lib/auth';
+import { PERMISSIONS, PermissionError } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
   try {
+    await requirePermission(request, PERMISSIONS.AUDIT_VIEW);
+
     const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -83,6 +87,12 @@ export async function GET(request: NextRequest) {
       lowStock: lowStock.slice(0, 10), // Top 10 low stock items
     });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    if (error instanceof PermissionError) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('Error generating summary:', error);
     return NextResponse.json(
       { error: 'Failed to generate summary' },

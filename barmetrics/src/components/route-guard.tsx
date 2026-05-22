@@ -34,6 +34,7 @@ const RULES: Array<[RegExp, Permission]> = [
   [/^\/variance$/, PERMISSIONS.VARIANCE_VIEW],
   [/^\/daily-report$/, PERMISSIONS.VARIANCE_VIEW],
   [/^\/audit\/.*$/, PERMISSIONS.AUDIT_VIEW],
+  [/^\/reports$/, PERMISSIONS.AUDIT_VIEW],
 ];
 
 function AccessDenied() {

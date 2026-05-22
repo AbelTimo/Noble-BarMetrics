@@ -24,7 +24,7 @@ const navItems = [
   { href: '/sessions', label: 'Sessions', icon: ClipboardList, permission: null },
   { href: '/variance', label: 'Variance', icon: TrendingDown, permission: PERMISSIONS.VARIANCE_VIEW },
   { href: '/daily-report', label: 'Daily Report', icon: FileText, permission: PERMISSIONS.VARIANCE_VIEW },
-  { href: '/reports', label: 'Reports', icon: FileBarChart, permission: null },
+  { href: '/reports', label: 'Reports', icon: FileBarChart, permission: PERMISSIONS.AUDIT_VIEW },
   { href: '/users', label: 'Users', icon: Users, permission: PERMISSIONS.USER_VIEW },
 ];
 
