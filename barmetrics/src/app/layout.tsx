@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Raleway, Playfair_Display } from "next/font/google";
+import { Raleway, Cinzel } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "sonner";
@@ -11,11 +11,12 @@ const raleway = Raleway({
   display: "swap",
 });
 
-// Display serif for the Melekyia brand wordmark.
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+// Roman-capitals display face for the Melekyia brand wordmark — echoes the
+// engraved lettering inside the logo artwork.
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -30,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${raleway.variable} ${playfair.variable}`}>
+    <html lang="en" className={`dark ${raleway.variable} ${cinzel.variable}`}>
       <body
         className="antialiased min-h-screen bg-background text-foreground font-sans"
       >

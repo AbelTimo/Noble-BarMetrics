@@ -72,8 +72,8 @@ export function NavHeader() {
               className="h-12 w-auto"
             />
             <span
-              className="hidden text-lg font-black tracking-wide text-foreground/80 sm:inline-block"
-              style={{ fontFamily: 'var(--font-playfair)' }}
+              className="hidden text-base font-bold uppercase tracking-[0.2em] text-foreground/80 sm:inline-block"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               Melekyia
             </span>
