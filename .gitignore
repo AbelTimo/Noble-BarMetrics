@@ -7,8 +7,10 @@
 # Playwright MCP session output (snapshots, console logs, screenshots)
 .playwright-mcp/
 
-# Scratch notes in the data folder (the real data files are .xlsx/.csv)
+# Scratch in the data folder (the real data files are .xlsx/.csv)
 barmetrics/data/*.md
+barmetrics/data/*.py
+barmetrics/data/logo-backup/
 
 # Local Claude Code MCP server config
 .mcp.json
