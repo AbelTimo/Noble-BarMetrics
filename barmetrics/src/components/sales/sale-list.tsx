@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, DollarSign, Trash2 } from 'lucide-react';
+import { Plus, DollarSign, Trash2, Upload } from 'lucide-react';
 import { SALE_SHIFTS } from '@/lib/validations';
 import { toast } from 'sonner';
 
@@ -84,12 +84,20 @@ export function SaleList() {
           <h1 className="text-2xl font-bold tracking-[0.15em] uppercase text-foreground">Sales</h1>
           <p className="text-sm text-muted-foreground mt-1">Record sales for variance calculation</p>
         </div>
-        <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/sales/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Record Sale
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href="/sales/import">
+              <Upload className="h-4 w-4 mr-2" />
+              Import CSV
+            </Link>
+          </Button>
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Link href="/sales/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Record Sale
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
