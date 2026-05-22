@@ -7,7 +7,7 @@ import { prisma } from './db';
 import { type Role, hasPermission, type Permission, PermissionError } from './permissions';
 
 const SESSION_COOKIE_NAME = 'barmetrics_session';
-const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+const SESSION_DURATION_MS = 12 * 60 * 60 * 1000; // 12 hours (about one shift)
 
 export interface AuthUser {
   id: string;

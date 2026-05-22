@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
@@ -61,14 +62,24 @@ function AccessDenied() {
 
 export function RouteGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { hasPermission, isLoading, isAuthenticated } = useAuth();
 
-  const rule = RULES.find(([pattern]) => pattern.test(pathname));
-  if (!rule) return <>{children}</>;
+  // No valid session → bounce to login. The middleware only checks that a
+  // session cookie *exists*, so a stale/expired cookie otherwise lands the
+  // user on an empty app shell. This is the real auth gate on the client.
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [isLoading, isAuthenticated, pathname, router]);
 
   // Wait for the auth context to resolve before deciding.
   if (isLoading) return null;
-  if (!isAuthenticated || !hasPermission(rule[1])) return <AccessDenied />;
+  if (!isAuthenticated) return null; // redirecting to /login
+
+  const rule = RULES.find(([pattern]) => pattern.test(pathname));
+  if (rule && !hasPermission(rule[1])) return <AccessDenied />;
 
   return <>{children}</>;
 }
