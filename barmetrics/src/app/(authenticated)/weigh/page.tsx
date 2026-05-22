@@ -29,7 +29,7 @@ import {
   Zap,
   Search,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, localDateString } from '@/lib/utils';
 
 interface SKU {
   id: string;
@@ -46,6 +46,7 @@ interface Session {
   id: string;
   name: string | null;
   location: string | null;
+  startedAt: string;
 }
 
 function WeighTrackPageContent() {
@@ -78,12 +79,16 @@ function WeighTrackPageContent() {
         }
 
         if (sessionsRes.ok) {
-          const sessionsData = await sessionsRes.json();
+          const sessionsData: Session[] = await sessionsRes.json();
           setSessions(sessionsData);
-          // Auto-select first active session
-          if (sessionsData.length > 0) {
-            setSelectedSession(sessionsData[0]);
-          }
+          // Auto-select an active session only if it was started today — a stale
+          // session left open from a previous day shouldn't show as "active".
+          // With none selected, the first weigh creates a fresh session for today.
+          const today = localDateString();
+          const todays = sessionsData.find(
+            (s) => localDateString(new Date(s.startedAt)) === today,
+          );
+          if (todays) setSelectedSession(todays);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
