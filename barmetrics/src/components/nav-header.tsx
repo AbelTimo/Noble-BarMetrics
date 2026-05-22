@@ -71,7 +71,10 @@ export function NavHeader() {
               alt="Melekyia"
               className="h-12 w-auto"
             />
-            <span className="hidden text-sm font-semibold tracking-tight sm:inline-block">
+            <span
+              className="hidden text-lg font-black tracking-wide sm:inline-block"
+              style={{ fontFamily: 'var(--font-playfair)' }}
+            >
               Melekyia
             </span>
           </Link>
