@@ -69,7 +69,7 @@ export function NavHeader() {
             <img
               src="/logo-mark.png"
               alt="Melekyia"
-              className="h-9 w-auto"
+              className="h-12 w-auto"
             />
             <span className="hidden text-sm font-semibold tracking-tight sm:inline-block">
               Melekyia
