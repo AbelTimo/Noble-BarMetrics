@@ -209,7 +209,7 @@ export function ProductForm({
         <div className="space-y-2">
           <Label htmlFor="nominalVolumeMl">Bottle Size (ml) *</Label>
           <Select
-            defaultValue={String(defaultValues?.nominalVolumeMl || 750)}
+            defaultValue={String(defaultValues?.nominalVolumeMl || 1000)}
             onValueChange={(value) => setValue('nominalVolumeMl', parseInt(value))}
           >
             <SelectTrigger>

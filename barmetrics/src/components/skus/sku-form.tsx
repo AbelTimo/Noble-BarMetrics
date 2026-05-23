@@ -97,7 +97,7 @@ export function SKUForm({
         <div className="space-y-2">
           <Label htmlFor="sizeMl">Bottle Size (ml) *</Label>
           <Select
-            defaultValue={String(defaultValues?.sizeMl || 750)}
+            defaultValue={String(defaultValues?.sizeMl || 1000)}
             onValueChange={(value) => setValue('sizeMl', parseInt(value))}
           >
             <SelectTrigger>
