@@ -43,7 +43,7 @@ export function ProductForm({
       productName: '',
       category: 'VODKA',
       abvPercent: 40,
-      nominalVolumeMl: 750,
+      nominalVolumeMl: 1000,
       defaultDensity: 0.95,
       defaultTareG: null,
       isActive: true,
@@ -218,7 +218,7 @@ export function ProductForm({
             <SelectContent>
               {BOTTLE_SIZES.map((size) => (
                 <SelectItem key={size} value={String(size)}>
-                  {size}ml {size === 750 && '(Standard)'}
+                  {size}ml {size === 1000 && '(Standard)'}
                 </SelectItem>
               ))}
             </SelectContent>

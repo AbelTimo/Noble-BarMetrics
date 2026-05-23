@@ -49,7 +49,7 @@ export function SKUForm({
       name: '',
       description: '',
       category: 'VODKA',
-      sizeMl: 750,
+      sizeMl: 1000,
       isActive: true,
       ...defaultValues,
     },
@@ -106,7 +106,7 @@ export function SKUForm({
             <SelectContent>
               {BOTTLE_SIZES.map((size) => (
                 <SelectItem key={size} value={String(size)}>
-                  {size}ml {size === 750 && '(Standard)'}
+                  {size}ml {size === 1000 && '(Standard)'}
                 </SelectItem>
               ))}
             </SelectContent>
