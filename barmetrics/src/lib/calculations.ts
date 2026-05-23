@@ -227,6 +227,9 @@ export const LIQUOR_CLASSES = [
   'LIQUEUR',
   'BITTERS',
   'VERMOUTH',
+  'BEER',
+  'WINE',
+  'NON_ALCOHOLIC',
   'OTHER',
 ] as const;
 export type LiquorClass = typeof LIQUOR_CLASSES[number];
@@ -245,6 +248,9 @@ export const LIQUOR_SUBCLASSES: Record<LiquorClass, readonly string[]> = {
   LIQUEUR:  ['CREAM', 'COFFEE', 'HERBAL', 'FRUIT', 'NUT', 'CHOCOLATE', 'TRIPLE_SEC', 'AMARO'],
   BITTERS:  [],
   VERMOUTH: ['DRY', 'SWEET', 'BLANC'],
+  BEER:     ['LAGER', 'PILSNER', 'IPA', 'PALE_ALE', 'STOUT', 'PORTER', 'WHEAT', 'CIDER', 'NON_ALCOHOLIC'],
+  WINE:     ['RED', 'WHITE', 'ROSE', 'SPARKLING', 'DESSERT', 'FORTIFIED'],
+  NON_ALCOHOLIC: ['WATER', 'SODA', 'JUICE', 'ENERGY_DRINK', 'COFFEE', 'TEA', 'MIXER'],
   OTHER:    [],
 } as const;
 
