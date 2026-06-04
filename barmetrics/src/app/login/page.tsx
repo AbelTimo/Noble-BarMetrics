@@ -26,6 +26,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isLoading, isAuthenticated } = useAuth();
+
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState<string | null>(null);
