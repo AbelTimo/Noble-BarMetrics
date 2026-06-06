@@ -41,7 +41,40 @@ interface SKU {
   densityGPerMl: number | null;
   abvPercent: number | null;
   // Linked catalog products (a measurement records against a Product).
-  products?: Array<{ isPrimary: boolean; product: { id: string } }>;
+  products?: Array<{
+    isPrimary: boolean;
+    product: {
+      id: string;
+      defaultTareG: number | null;
+      abvPercent: number | null;
+      nominalVolumeMl: number;
+    };
+  }>;
+}
+
+// Resolve the catalog product a SKU records against (prefer the primary link).
+function primaryProductOf(sku: SKU) {
+  return (
+    sku.products?.find((p) => p.isPrimary)?.product ?? sku.products?.[0]?.product
+  );
+}
+
+// Effective empty-bottle tare for a SKU. The SKU's own value wins; otherwise fall
+// back to the linked product's defaultTareG — but only when the SKU size matches
+// the product's nominal bottle. A 30ml pour SKU must not borrow a 1000ml bottle's
+// tare, so size-mismatched units stay unconfigured (and correctly gated).
+function effectiveTareG(sku: SKU): number | null {
+  if (sku.bottleTareG != null) return sku.bottleTareG;
+  const product = primaryProductOf(sku);
+  if (product?.defaultTareG != null && product.nominalVolumeMl === sku.sizeMl) {
+    return product.defaultTareG;
+  }
+  return null;
+}
+
+// Effective ABV — size-independent, so it's always safe to fall back to the product.
+function effectiveAbv(sku: SKU): number | null {
+  return sku.abvPercent ?? primaryProductOf(sku)?.abvPercent ?? null;
 }
 
 interface Session {
@@ -125,13 +158,14 @@ function WeighTrackPageContent() {
 
   // Calculate volume when weight changes
   useEffect(() => {
-    if (selectedSKU && grossWeightG && selectedSKU.bottleTareG) {
+    const tareWeightG = selectedSKU ? effectiveTareG(selectedSKU) : null;
+    if (selectedSKU && grossWeightG && tareWeightG != null) {
       const weight = parseFloat(grossWeightG);
       if (!isNaN(weight)) {
         const result = calculateVolumeFromWeight({
           grossWeightG: weight,
-          tareWeightG: selectedSKU.bottleTareG,
-          abvPercent: selectedSKU.abvPercent || 40,
+          tareWeightG,
+          abvPercent: effectiveAbv(selectedSKU) || 40,
           nominalVolumeMl: selectedSKU.sizeMl,
           standardPourMl: DEFAULT_STANDARD_POUR_ML,
         });
@@ -205,7 +239,7 @@ function WeighTrackPageContent() {
         body: JSON.stringify({
           productId,
           grossWeightG: parseFloat(grossWeightG),
-          tareWeightG: selectedSKU.bottleTareG,
+          tareWeightG: effectiveTareG(selectedSKU),
           standardPourMl: DEFAULT_STANDARD_POUR_ML,
         }),
       });
@@ -235,6 +269,8 @@ function WeighTrackPageContent() {
   };
 
   const canSave = selectedSKU && grossWeightG && calculation && !isSaving;
+  const selectedTareG = selectedSKU ? effectiveTareG(selectedSKU) : null;
+  const selectedAbv = selectedSKU ? effectiveAbv(selectedSKU) : null;
 
   return (
     <div className="container mx-auto py-8 max-w-5xl">
@@ -396,7 +432,7 @@ function WeighTrackPageContent() {
                 </SelectContent>
               </Select>
 
-              {selectedSKU && !selectedSKU.bottleTareG && (
+              {selectedSKU && selectedTareG == null && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
@@ -405,17 +441,17 @@ function WeighTrackPageContent() {
                 </Alert>
               )}
 
-              {selectedSKU && selectedSKU.bottleTareG && (
+              {selectedSKU && selectedTareG != null && (
                 <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
                   <p>
-                    <strong>Empty Bottle:</strong> {selectedSKU.bottleTareG}g
+                    <strong>Empty Bottle:</strong> {selectedTareG}g
                   </p>
                   <p>
                     <strong>Full Bottle:</strong> {selectedSKU.sizeMl}ml
                   </p>
-                  {selectedSKU.abvPercent && (
+                  {selectedAbv && (
                     <p>
-                      <strong>Alcohol %:</strong> {selectedSKU.abvPercent}%
+                      <strong>Alcohol %:</strong> {selectedAbv}%
                     </p>
                   )}
                 </div>
@@ -449,7 +485,7 @@ function WeighTrackPageContent() {
                     'text-2xl font-mono text-center py-6',
                     calculation && 'border-emerald-500 bg-emerald-500/10'
                   )}
-                  disabled={!selectedSKU || !selectedSKU.bottleTareG}
+                  disabled={!selectedSKU || selectedTareG == null}
                 />
               </div>
             </CardContent>
